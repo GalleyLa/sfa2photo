@@ -17,8 +17,8 @@ class LoginUseCase {
 
       // User モデルへ変換（ここはAPI仕様に合わせる）
       final user = User(
-        id: data['data']['user_id'] ?? 'unknown',
-        name: "Dummy Name",
+        id: data['data']['data']['search_member_ids'] ?? 'unknown',
+        name: data['data']['data']['disp_member_name'] ?? 'unknown',
         email: "dummy@example.com",
         city: "Tokyo",
       );
