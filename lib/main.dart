@@ -1,10 +1,10 @@
 // main.dart
+// エントリーポイント
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import 'ui/login_page.dart';
+import 'presentation/pages/login_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,9 +24,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // ← デバッグバナー非表示（任意）
-      title: 'Flutter App with Cache',
+      title: 'Get wawa data',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(),
+      home: const LoginPage(), //presentation/pages/login_page.dart
     );
   }
 }

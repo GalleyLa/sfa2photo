@@ -1,6 +1,6 @@
 // infrastructure/database/schedule_dao.dart
 import 'package:sqflite/sqflite.dart';
-import '../database/app_database.dart';
+import 'app_database.dart';
 import '../../domain/schedule.dart';
 
 class ScheduleDao {

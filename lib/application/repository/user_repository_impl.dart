@@ -11,8 +11,8 @@ class UserRepositoryImpl implements UserRepository {
     await db.insert('users', {
       'id': user.id,
       'name': user.name,
-      'email': user.email,
-      'city': user.city,
+      //'email': user.email,
+      //'city': user.city,
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -26,8 +26,8 @@ class UserRepositoryImpl implements UserRepository {
       return User(
         id: row['id'] as String,
         name: row['name'] as String,
-        email: row['email'] as String,
-        city: row['city'] as String,
+        //email: row['email'] as String,
+        //city: row['city'] as String,
       );
     }
     return null;

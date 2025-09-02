@@ -1,52 +1,52 @@
 # sfa2photo
 
+## クリーンアーキテクチャ寄り?
+
+### ポイント
+- DB層の変更がModel/Domainに影響しにくい
+- カラム名変更 → UserTable だけ変更で済む
+- クリーンアーキテクチャ準拠
+- DAO → Repository → UseCase → Presentation
+- 将来的な拡張も容易
+- 新しいテーブルやカラム追加も、既存コードへの影響最小限
+
 ```
-lib/  
- ├── main.dart          # エントリーポイント  
- ├── ui/                # UI層 (画面, Widget)  
- │    └── login_page.dart  
- ├── application/       # アプリケーション層 (状態管理, UseCase)  
- │    └── login_usecase.dart  
- ├── domain/            # ドメイン層 (モデル定義, エンティティ)  
- │    └── user.dart  
- └── infrastructure/    # インフラ層 (API通信, DB, 外部接続)  
-      ├── api_service.dart  
-      ├── local_cache.dart        # SecureStorage や Hive  
-      ├── database/  
-      |    ├── app_database.dart # SQLite初期化  
-      |    ├── user_dao.dart     # Userテーブル操作  
-      |    └── schedule_dao.dart # Scheduleテーブル操作  
-      └── repository/  
-           ├── user_repository_impl.dart  
-           └── schedule_repository_impl.dart  
+lib/
+├── application/
+│   └── usecases/
+│       └── get_user_usecase.dart     // ユースケース
+│
+├── data/
+│   ├── local/
+│   │   ├── db/
+│   │   │   ├── app_database.dart      // DB初期化、接続
+│   │   │   └── tables/
+│   │   │       └── user_table.dart   // カラム名定義
+│   │   └── dao/                      // DAO (Data Access Object) の定義
+│   │       └── user_dao.dart         // DB操作（CRUD）
+│   ├── models/
+│   │   └── user_model.dart           // DB ↔ アプリのModel
+│   ├── repositories/ 
+│   │   └──　
+│   └── services                     // ビジネスロジックではないが、アプリを作成するのに必要なクラス
+│       └──
+│
+├── domain/
+│   ├── entities/                     // ビジネスオブジェクトの定義
+│   │   └── user.dart                 // ドメイン層のエンティティ
+│   ├── repositories/                 // データソースへのアクセスを抽象化するインターフェース
+│   │   └── user_repository.dart      // ドメイン用インターフェース
+│   ├── exceptions 　　　　　　　　　　//  想定される例外の定義
+│   │   └──　
+│   └── services                     // ビジネスロジックではないが、アプリを作成するのに必要なクラス
+│       └──
+│
+└── presentation/
+    ├── pages/
+    └── widgets/
 
 ```
 
-
-```
-.
-└── main
-    ├── UI
-    │   └── login_page.dart
-    │       ├── _doLogin -> ①
-    │       └── ⑦->UIに反映
-    ├── applicatin
-    │   └── login_usecase.dart
-    │       ├── ①-> _doLogin -> api.loginAndFatch -> ②
-    │       ├── ③-> User -> ④
-    │       ├── ⑤-> cach.saveUser ->⑥
-    │       └── ⑦<-
-    ├── infrastructure
-    │   ├── api_service.dart
-    │   │   ├── ②-> loginAndFatch -> wawa
-    │   │   └── ③<- user
-    │   └── local_cache.dart
-    │       └── ⑥-> saveUser
-    └── domain
-        └── user.dart
-            ├── ④->User
-            └── ⑤<-
-```
 
 # DB の責務と配置（クリーンアーキテクチャ寄り）
 
@@ -126,3 +126,11 @@ UI: ViewModel / StateNotifier
      - 例：title や start が異なれば更新とみなす
 - 削除検知
      - サーバーの全件からローカルに存在する id がなくなったら削除
+
+## セキュアストレージがからパスワードを取り出す手順
+Presentation → Domain (UseCase) → Data (Repository) → DataSource (SecureStorage)
+- SecureStorageDataSource が FlutterSecureStorage.read を呼ぶ
+- RepositoryImpl がそれを受け取って Password エンティティに包む
+- UseCase がそのエンティティを返す
+- ViewModel が state にセットする
+- UI がそれを表示する

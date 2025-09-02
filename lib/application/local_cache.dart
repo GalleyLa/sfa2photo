@@ -10,8 +10,8 @@ class LocalCache {
     await box.put("user", {
       "id": user.id,
       "name": user.name,
-      "email": user.email,
-      "city": user.city,
+      //"email": user.email,
+      //"city": user.city,
     });
   }
 
@@ -23,8 +23,8 @@ class LocalCache {
     return User(
       id: data["id"],
       name: data["name"],
-      email: data["email"],
-      city: data["city"],
+      //email: data["email"],
+      //city: data["city"],
     );
   }
 
