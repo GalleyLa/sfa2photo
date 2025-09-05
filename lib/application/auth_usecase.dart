@@ -1,4 +1,4 @@
-import '../domain/entities/auth_entity.dart';
+import '../domain/entity/auth_entity.dart';
 import '../domain/repository/auth_repository.dart';
 
 class AuthUseCase {
@@ -6,12 +6,11 @@ class AuthUseCase {
 
   AuthUseCase(this.repository);
 
-  Future<bool> execute(AuthEntity entity) async {
-    final success = await repository.authenticate(entity);
-    if (success) {
-      await repository.saveCredentials(entity);
-      return true;
+  Future<AuthEntity?> execute(AuthEntity entity) async {
+    final authEntity = await repository.authenticate(entity);
+    if (authEntity != null) {
+      await repository.saveCredentials(authEntity);
     }
-    return false;
+    return authEntity;
   }
 }

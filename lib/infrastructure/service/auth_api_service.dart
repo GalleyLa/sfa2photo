@@ -28,10 +28,7 @@ class AuthApiService {
   // Future<String> authenticate(String username, String password) async {
   //   // 既存の認証API呼び出しに差し替え
   //   throw UnimplementedError();
-  Future<Map<String, dynamic>> authenticate(
-    String userId,
-    String password,
-  ) async {
+  Future<Map<String, dynamic>> login(String userId, String password) async {
     try {
       await _dio.post(
         '',

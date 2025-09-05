@@ -1,6 +1,6 @@
-import '../entities/auth_entity.dart';
+import '../entity/auth_entity.dart';
 
 abstract class AuthRepository {
-  Future<bool> authenticate(AuthEntity entity);
+  Future<AuthEntity?> authenticate(AuthEntity entity);
   Future<void> saveCredentials(AuthEntity entity);
 }
