@@ -2,15 +2,17 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-class ApiService {
+/*
+class AuthApiService {
   final String baseUrl;
 
   late Dio _dio;
   late CookieJar _cookieJar;
 
-  ApiService({required this.baseUrl}) {
+  authenticate({required this.baseUrl}) {
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -26,6 +28,7 @@ class ApiService {
     );
   }
 
+  //グループウエアのログイン
   Future<Map<String, dynamic>> login(String userId, String password) async {
     try {
       // Step 1: ログイン
@@ -49,10 +52,12 @@ class ApiService {
       if (memberCookie.name.isEmpty)
         throw Exception("member_idがCookieに含まれていません");
 
+      debugPrint("member_id: ${memberCookie.value}");
+
       //final memberId = memberCookie.value;
       return {
         "success": true,
-        "data": {"id": "74", "name": "test"},
+        "data": {"id": memberCookie.value, "name": "test"},
       };
     } catch (e) {
       return {"success": false, "data": e.toString()};
@@ -91,3 +96,5 @@ class ApiService {
     await _cookieJar.deleteAll(); // ★Cookie破棄
   }
 }
+
+*/

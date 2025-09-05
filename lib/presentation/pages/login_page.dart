@@ -1,12 +1,44 @@
 // ui/login_page.dart
-
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../application/usecases/login_usecase.dart';
-import '../../data/remote/api_service.dart';
-import '../../application/local_cache.dart';
-import '../../domain/user.dart';
+import '../../infrastructure/remote/auth_api_service.dart';
+import '../../infrastructure/local_cache.dart';
+import '../../domain/entities/user.dart';
+
+// presentation/screens/login_screen.dart
+//import 'package:flutter/material.dart';
+//import 'package:flutter_riverpod/flutter_riverpod.dart';
+//import '../viewmodels/login_viewmodel.dart';
+//import '../viewmodels/providers.dart';
+
+/*
+class LoginScreen extends ConsumerWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final password = ref.watch(loginViewModelProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Login")),
+      body: Column(
+        children: [
+          Text("保存済みパスワード: ${password ?? "なし"}"),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(loginViewModelProvider.notifier).loadPassword();
+            },
+            child: const Text("パスワードを読み込む"),
+          ),
+        ],
+      ),
+    );
+  }
+}
+*/
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   String result = "";
   String baseurl = dotenv.get('BASE_URL');
 
-  late LoginUseCase _useCase; //application/usecases/login_usecase.dart
+  late LoginUseCase _useCase; //infrastructure/usecases/login_usecase.dart
   User? _cachedUser;
 
   @override
@@ -42,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  //TODO: ログイン後のcookieが有る場合は、ログイン不要処理を実装
   void _doLogin() async {
     final userId = _userController.text;
     final password = _passController.text;
@@ -91,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(onPressed: _doLogin, child: const Text("ログイン")),
-            //ElevatedButton(onPressed: _logout, child: const Text("ログアウト")),
+            ElevatedButton(onPressed: _logout, child: const Text("ログアウト")),
             if (_cachedUser != null) ...[
               const SizedBox(height: 20),
               ElevatedButton(onPressed: _fetchData, child: const Text("データ取得")),
@@ -104,3 +137,5 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+*/
