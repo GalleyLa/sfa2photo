@@ -3,6 +3,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthApiService {
   final String baseUrl;
@@ -24,6 +25,8 @@ class AuthApiService {
       LogInterceptor(requestBody: true, responseBody: true),
     );
   }
+
+  Dio get dio => _dio; // 他APIサービスで再利用するために公開
 
   // Future<String> authenticate(String username, String password) async {
   //   // 既存の認証API呼び出しに差し替え
