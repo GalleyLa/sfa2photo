@@ -1,5 +1,5 @@
-import '../domain/entity/auth_entity.dart';
-import '../domain/repository/auth_repository.dart';
+import '../../domain/entity/auth_entity.dart';
+import '../../domain/repository/auth_repository.dart';
 
 class AuthUseCase {
   final AuthRepository repository;

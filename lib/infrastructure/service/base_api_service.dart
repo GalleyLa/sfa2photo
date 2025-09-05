@@ -14,8 +14,8 @@ class BaseApiService {
   }) async {
     final userId = await secureStorage.read(key: 'user_id');
     if (userId == null) throw Exception("未ログイン状態です");
-
-    final qp = {'id': userId, ...?queryParameters};
+    // 必須の id を付与
+    final qp = {'id': userId, ...?queryParameters}; // 呼び出し元から追加パラメータ
 
     return await authApiService.dio.get<T>(path, queryParameters: qp);
   }
