@@ -20,92 +20,68 @@ Clean Architecture では大きく以下のレイヤーに分けるのが一般�
      - UI, ViewModel, StateNotifier / Bloc
      - ユースケースを呼び出して状態を更新するだけ
 
+クリーンアーキテクチャ構成図
 ```
-再整理
-lib/
-├── Application(Logic) // ユースケース（サービス）
-│   ├── usecase //アプリケーションのロジック本体
-│   └── Interface //アプリケーションと外部APIロジックの仲立ち
-│
-├── domain/  //エンティティ、リポジトリの抽象（interface）
-│   ├── entity //オブジェクト・アプリ共通のモデル定義
-│   ├── value  //列挙型(enum)
-│   ├── repository: 外部リソースアクセスの仲介インターフェースの定義
-│   ├── usecase: アプリケーションロジックインターフェースの定義
-│   ├──factory: ドメインエンティティ生成インターフェースの定義
-│
-├── data // リポジトリ実装・DTO・モデル変換
-│   ├── repositories_impl/
-│   └─ models/ (DTO, Mapper)
-│
-├── Infrastructure(Repository)　// APIクライアント・DB・外部サービス実装
-│   ├── mock
-│   ├── local
-│   │   └── db
-│   │       └──  
-│   ├── remote
-│   ├── datasource: 実際に外部リソースとやりとりするインターフェースの定義と実装
-│   ├── model: データソースモデル定義
-│   ├── repository: ドメイン層で定義したrepositoryの実装
-│   ├── factory: ドメイン層で定義したfactoryの実装
-│
-├── presentation/
-│   ├── screens/  (page)
-│   │   └── login_screen.dart
-│   ├── viewmodels/
-│   │   └── login_viewmodel.dart
-│   ├── provider
-│   ├── navigation (画面遷移を関数に)
-│   ├── extension (アイコンを列挙するなど)
-│   ├── component 
-│   ├── state
+lib
+├─ application // UseCase
+|  ├─ usecases
+|     ├─ auth_usecase.dart // 認証 → 成功時に保存
+|     ├─ authenticate() → 成功時 Cookie + id 保存
+|     ├─ loadCredentials() → 保存済み Cookie + id を復元
+|
+├─ di
+|
+├─  domain // Entity & Repository 抽象
+|   ├─ AuthEntity (username, password, id, name, cookies)
+|   └─ AuthRepository 抽象
+|       - authenticate()
+|       - saveCredentials()
+|       - loadCredentials()
+|       - attachAuthHeaders(request) ← 他API呼び出し時に利用
+|
+├─ infrastructure 層（実装）
+|  ├─ AuthRepositoryImpl
+|     ├─ AuthApiService（既存の認証API呼び出し）
+|     └─ SecureStorageService（flutter_secure_storage を利用）
+|
+├─presentation  層（UI / State管理）
+|  └─ LoginPage（ユーザ入力 → ViewModel呼び出し）
+|     ├─ Riverpodでログイン状態 & AuthEntity を監視
+|     ├─ 起動時に loadCredentials() でログイン状態を再現
+  └─ Riverpod Provider
+       └─ AuthUseCase
+            └─ AuthRepository
+                 ├─ AuthApiService (ログイン & Cookie管理)
+                 ├─ SecureStorage (id, username, password保存)
+                 └─ BaseApiService (全API呼び出し時にid付与)
+                          └─ SomeOtherApiService など
+├─
 
+
+
+
+application  層（UseCase）
+  └─ AuthUseCase（認証 → 成功時に保存）
+
+domain  層（Entity & Repository 抽象）
+  ├─ AuthEntity（ユーザ名・パスワード）
+  └─ AuthRepository（authenticate(User,Pass), saveToStorage(User,Pass)）
+
+infrastructure 層（実装）
+  ├─ AuthRepositoryImpl
+       ├─ AuthApiService（既存の認証API呼び出し）
+       └─ SecureStorageService（flutter_secure_storage を利用）
+
+## アーキテクチャ概要
+Presentation
+  └─ Riverpod Provider
+       └─ AuthUseCase
+            └─ AuthRepository
+                 ├─ AuthApiService (ログイン & Cookie管理)
+                 ├─ SecureStorage (id, username, password保存)
+                 └─ BaseApiService (全API呼び出し時にid付与)
+                          └─ SomeOtherApiService など
 ```
-
-
-```
-lib/
-├── domain/
-│   ├── entities/ // ビジネスオブジェクトの定義
-│   │   ├── password.dart
-│   │   └── user.dart   
-│   ├── repositories/  // データソースへのアクセスを抽象化するインターフェース
-│   │   └── password_repository.dart
-│   ├── usecases/
-│   │   ├── save_password_usecase.dart
-│   │   └── get_password_usecase.dart
-│   ├── exceptions 　//  想定される例外の定義
-│   │   └──　
-│   └── services    // ビジネスロジックではないが、アプリを作成するのに必要なクラス
-│   
-├── data/
-│   ├── datasources/
-│   │   └── secure_storage_datasource.dart
-│   ├── repositories/
-│   │   └──password_repository_impl.dart
-│   ├── local/
-│   │   ├── db/
-│   │   │   ├── app_database.dart      // DB初期化、接続
-│   │   │   └── tables/
-│   │   │       └── user_table.dart   // カラム名定義
-│   │   └── dao/                      // DAO (Data Access Object) の定義
-│   │       └── user_dao.dart         // DB操作（CRUD）
-│   ├── models/
-│   │   └── user_model.dart           // DB ↔ アプリのModel
-│   ├── repositories/ 
-│   │   └──　
-│   └── services  // ビジネスロジックではないが、アプリを作成するのに必要なクラス
-│ 
-├── Infrastructure //API呼び出し・外部依存
-│
-├── presentation/
-│   ├── screens/
-│   │   └── login_screen.dart
-│   ├── viewmodels/
-│       └── login_viewmodel.dart
-
-```
-
 
 # DB の責務と配置（クリーンアーキテクチャ寄り）
 
@@ -142,6 +118,13 @@ lib/
 - SaveScheduleUseCase
  などのユースケースで、インターフェースを呼ぶ
 
+# Repository層の責務
+- ScheduleRepository
+     - Future<List<ScheduleEntity>> fetchSchedules()
+     - Future<void> saveSchedules(List<ScheduleEntity>)
+     - Future<List<ScheduleEntity>> loadSchedules()
+- CustomerRepository
+     - Future<CustomerEntity?> fetchCustomer(String scheduleId)
 
 # データフローのイメージ
 
@@ -193,3 +176,92 @@ Presentation → Domain (UseCase) → Data (Repository) → DataSource (SecureSt
 - UseCase がそのエンティティを返す
 - ViewModel が state にセットする
 - UI がそれを表示する
+
+
+## .envは何処で行うか
+### 原則
+
+- domain層 / application層 は環境変数やAPIの詳細を知らない。
+- infrastructure層 の 実装部分 (AuthApiService) が外部依存（Dio・ベースURL）を持つ。
+- .env の読み込みは フレームワーク依存部分（最上位 / main.dart 付近） で行い、依存性注入（DIコンテナ経由）で AuthApiService に値を渡すのが適切。
+### 実装まとめ
+- .env の読み込みは framework 層（main.dart）で実行。
+- そこで得た値を DI コンテナ（get_it）経由で infrastructure 層の AuthApiService に渡す。
+- domain / application 層は .env の存在を意識しない。
+
+
+### 方針
+#### OCESS認証周りの処理
+- UI 層は Riverpod の authEntityProvider から直接 id や name を参照可能。
+- domain/application 層は AuthEntity という統一的な型を通じて情報を扱うため、Mapの構造に依存しない。
+- 認証成功後は id / name を SecureStorage に保存
+- AuthApiService が 1つの Dio + CookieJar を管理
+- 他APIサービス (SomeOtherApiService) も AuthApiServiceが持つDioを使う ことで Cookie を共有
+- Cookie 管理は Dio + CookieManager に一任
+- 追加で必要な id は queryParameters や headers に明示的に付与
+- domain 層 / application 層は「Cookie」という技術的詳細を意識せずに済む
+- id 付与は必ず自動化（BaseApiService に集約）
+- 必須パラメータ（id） は BaseApiService で自動付与
+- 追加パラメータは柔軟に対応（呼び出し側で queryParameters 
+- 呼び出し先 API ごとに仕様が違っても、共通基盤を崩さずに拡張可能
+- BaseApiService では 呼び出し側のパラメータとマージするだけ
+
+
+##
+1. ログイン
+- 認証API呼び出し → Cookie管理（Dio + CookieManager）
+- 内部IDを取得・保持
+1. スケジュール一覧取得（内部ID必須）
+- APIから日付付きスケジュールデータを取得
+- ローカルDBに保存
+- UI：カレンダービューに表示
+1. 顧客情報取得（スケジュールID必須）
+- カレンダービューでユーザがスケジュールをタップ
+- スケジュールIDをキーにAPI呼び出し（内部ID + scheduleId）
+- 顧客情報を取得し、UIに表示
+
+#### 認証後のデータ取得
+1. 認証
+     - 入力: ユーザID / パスワード
+     - 処理: 認証API呼び出し（Cookie + 内部ID取得）
+     - 出力: 内部ID
+1. 保存: SecureStorage に保存
+     - 内部IDに紐づいたデータ取得
+     - 入力: 内部ID（自動付与）
+     - 処理: BaseApiService + Cookieでデータ取得
+     - 出力: データ（例: テナント一覧, プロジェクト一覧）
+1. 取得データ内から特定のキーを抽出
+     - 入力: 2の結果
+     - 処理: プレゼンテーション層（UI or UseCase）で選択/抽出
+     - 出力: 一時識別子（tenantIdやprojectIdなど）
+1. キーを使って更にデータ取得
+     - 入力: 内部ID + 一時識別子（例: tenantId）
+     - 処理: BaseApiService の呼び出し時に queryParameters に追加
+     - 出力: 特定のデータ
+1. ローカルDBに保存 → アプリケーションで利用
+     - 入力: 3,4で取得したデータ
+     - 処理: infrastructure層の LocalDatabaseService に保存
+     - 出力: domain entity として再利用可能
+
+#### 流れ
+```
+起動時
+ └─ LocalDatabaseService.loadData() → DBに保存済みデータを読み込み → UIに表示
+
+同期時（ユーザ操作）
+ ├─ AuthApiService で認証（必要なら再ログイン）
+ ├─ BaseApiService 経由で内部ID付きAPI呼び出し
+ ├─ 取得データから一時識別子（tenantIdなど）抽出
+ ├─ 追加API呼び出し（内部ID + tenantId）
+ ├─ LocalDatabaseService.saveData() → DB更新
+ └─ Riverpod state 更新 → UI再描画
+```
+
+## OCESS仕様
+ 
+- 認証APIは「トークン」ではなく「Cookie」を返す
+- member_id が Cookie に入っており、アプリはこれを保持する必要がある
+- 他のAPI呼び出しの際は
+     - Cookie を添付してセッションを維持
+     - さらに id をリクエストに含める
+

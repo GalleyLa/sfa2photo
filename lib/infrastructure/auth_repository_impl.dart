@@ -19,9 +19,12 @@ class AuthRepositoryImpl implements AuthRepository {
       //   id: data['id']?.toString(),
       //   name: data['name']?.toString(),
       // );
+      // final cookies =
+      //     result['cookies'] as List<String>; // ← AuthApiService で抽出して返すように修正
       final authEntity = entity.copyWith(
         id: data['id']?.toString(),
         name: data['name']?.toString(),
+        // cookies: cookies,
       );
 
       await saveCredentials(authEntity);
@@ -41,6 +44,12 @@ class AuthRepositoryImpl implements AuthRepository {
     if (entity.name != null) {
       await secureStorage.write(key: 'user_name', value: entity.name);
     }
+    // if (entity.cookies != null) {
+    //   await secureStorage.write(
+    //     key: 'cookies',
+    //     value: entity.cookies!.join(';'),
+    //   );
+    // }
   }
 
   @override
@@ -51,12 +60,28 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final id = await secureStorage.read(key: 'user_id');
     final name = await secureStorage.read(key: 'user_name');
+    // final cookieStr = await secureStorage.read(key: 'cookies');
+    // final cookies = cookieStr?.split(';');
 
     return AuthEntity(
       username: username,
       password: password,
       id: id,
       name: name,
+      // cookies: cookies,
     );
+  }
+
+  @override
+  Future<Map<String, String>> buildAuthHeaders(AuthEntity entity) async {
+    final headers = <String, String>{};
+    // Uncomment and adjust the following lines if your AuthEntity has cookies or id fields
+    // if (entity.cookies != null) {
+    //   headers['Cookie'] = entity.cookies!.join('; ');
+    // }
+    if (entity.id != null) {
+      headers['X-User-Id'] = entity.id!;
+    }
+    return headers;
   }
 }

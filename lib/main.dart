@@ -3,51 +3,25 @@
 //TODO: hiveからsecure_storageに変更
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-//import 'presentation/pages/login_page.dart';
 
-import 'di/locator.dart';
-import 'presentation/login_page.dart';
+// import 'di/providers.dart';
+import 'presentation/screens/login_screen.dart';
 
-/*
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // .envファイルを読み込む
-  await dotenv.load(fileName: 'assets/.env');
-  // Hive初期化
-  await Hive.initFlutter();
-
-  //runApp(const MyApp());
-  runApp(const ProviderScope(child: MyApp()));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // ← デバッグバナー非表示（任意）
-      title: 'Get wawa data',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(), //presentation/pages/login_page.dart
-      //home: const LoginScreen(), //presentation/pages/login_page.dart
-    );
-  }
-}
-*/
+//import 'package:dcdg/dcdg.dart'; //クラス図作成ツール用
+//flutter pub global run dcdgで表示される値をPlantUML Editorにコピペしてクラス図を生成できる
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized(); // ウィジェットツリー全体の初期化や管理
 
   // .env 読み込み
-  await dotenv.load(fileName: "assets/.env");
+  // await dotenv.load(fileName: "assets/.env");
+  final env = String.fromEnvironment('ENV', defaultValue: 'dev');
+  await dotenv.load(fileName: 'assets/.env.$env');
 
   // DI初期化
-  final baseUrl = dotenv.env['API_BASE_URL']!;
-  setupLocator(baseUrl: baseUrl);
+  // final baseUrl = dotenv.env['API_BASE_URL']!;
+  // setupLocator(baseUrl: baseUrl);
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -57,6 +31,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: LoginPage());
+    return MaterialApp(title: 'Auth Demo', home: const LoginScreen());
   }
 }

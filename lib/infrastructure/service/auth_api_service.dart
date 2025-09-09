@@ -2,8 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:io';
 
 class AuthApiService {
   final String baseUrl;
@@ -55,9 +56,13 @@ class AuthApiService {
 
       debugPrint("member_id: ${memberCookie.value}");
 
+      // Cookieを文字列リストとして返却
+      // final cookieStrings = cookies.map((c) => "${c.name}=${c.value}").toList();
+
       return {
         "success": true,
         "data": {"id": memberCookie.value, "name": "test"},
+        // "cookies": cookieStrings,
       };
     } catch (e) {
       return {"success": false, "data": e.toString()};
