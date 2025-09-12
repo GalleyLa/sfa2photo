@@ -14,30 +14,41 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   AuthNotifier(this._useCase) : super(AuthState.initial());
 
-  /// ログイン処理
   Future<void> login(String username, String password) async {
-    // ローディング開始
-    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+    state = state.copyWith(status: AuthStatus.loading, error: null);
 
-    final entity = AuthEntity(username: username, password: password);
-    final result = await _useCase.execute(entity);
+    try {
+      final entity = AuthEntity(username: username, password: password);
+      final result = await _useCase.execute(entity);
 
-    if (result != null) {
-      state = state.copyWith(
-        status: AuthStatus.authenticated,
-        user: result,
-        errorMessage: null,
-      );
-    } else {
-      state = state.copyWith(
-        status: AuthStatus.unauthenticated,
-        user: null,
-        errorMessage: "ユーザー名またはパスワードが間違っています",
-      );
+      if (result != null) {
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: result,
+          error: null,
+        );
+      } else {
+        state = state.copyWith(
+          status: AuthStatus.unauthenticated,
+          error: AuthError.invalidCredentials,
+        );
+      }
+    } on Exception catch (e) {
+      // 簡易的に判定（本来は DioException 等を詳細に判別）
+      if (e.toString().contains("Network")) {
+        state = state.copyWith(
+          status: AuthStatus.unauthenticated,
+          error: AuthError.networkError,
+        );
+      } else {
+        state = state.copyWith(
+          status: AuthStatus.unauthenticated,
+          error: AuthError.unknown,
+        );
+      }
     }
   }
 
-  /// ログアウト処理
   void logout() {
     state = AuthState.initial().copyWith(status: AuthStatus.unauthenticated);
   }

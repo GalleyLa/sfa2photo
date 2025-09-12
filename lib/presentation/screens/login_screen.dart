@@ -37,6 +37,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
+      if (next.error != null) {
+        String message;
+        switch (next.error!) {
+          case AuthError.invalidCredentials:
+            message = "ユーザー名またはパスワードが間違っています";
+            break;
+          case AuthError.networkError:
+            message = "ネットワークエラーが発生しました。接続を確認してください";
+            break;
+          case AuthError.unknown:
+          default:
+            message = "不明なエラーが発生しました";
+            break;
+        }
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("ログインエラー"),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
     });
 
     return Scaffold(
@@ -48,13 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Text("Status: ${authState.status}"),
             const SizedBox(height: 16),
-            if (authState.errorMessage != null) ...[
-              Text(
-                authState.errorMessage!,
-                style: const TextStyle(color: Colors.red),
-              ),
-              const SizedBox(height: 16),
-            ],
+
             // ユーザー名入力欄
             TextField(
               controller: _usernameController,

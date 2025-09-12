@@ -7,21 +7,17 @@ enum AuthError { invalidCredentials, networkError, unknown }
 class AuthState {
   final AuthStatus status;
   final AuthEntity? user;
-  final String? errorMessage; // 追加！
+  final AuthError? error;
 
-  const AuthState({required this.status, this.user, this.errorMessage});
+  const AuthState({required this.status, this.user, this.error});
 
   factory AuthState.initial() => const AuthState(status: AuthStatus.initial);
 
-  AuthState copyWith({
-    AuthStatus? status,
-    AuthEntity? user,
-    String? errorMessage,
-  }) {
+  AuthState copyWith({AuthStatus? status, AuthEntity? user, AuthError? error}) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,
-      errorMessage: errorMessage, // null を渡せばリセットされる
+      error: error, // null を渡せばリセットされる
     );
   }
 }
