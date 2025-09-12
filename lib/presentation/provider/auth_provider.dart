@@ -1,45 +1,48 @@
-// lib/presentation/provider/auth_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import '../../application/usecases/auth_usecase.dart';
+import '../../application/usecases/auth_usecase.dart';
 import '../../domain/entity/auth_entity.dart';
 import '../state/auth_state.dart';
 import '../../di/providers.dart';
 
-/// 認証状態
-final authStatusProvider = StateProvider<AuthStatus>(
-  (ref) => AuthStatus.initial,
-);
+/*
+本来は AuthRepository で例外を投げる → AuthUseCase で処理 → AuthNotifier で AuthError に変換、
+という流れが自然ですが、今回は簡略化してます。
+*/
 
-/// ログイン後の AuthEntity を保持
-final authEntityProvider = StateProvider<AuthEntity?>((ref) => null);
+class AuthNotifier extends StateNotifier<AuthState> {
+  final AuthUseCase _useCase;
 
-/// AuthController Provider
-final authControllerProvider = Provider((ref) {
-  final useCase = ref.watch(authUseCaseProvider);
-  final authStatus = ref.read(authStatusProvider.notifier);
-  final authEntity = ref.read(authEntityProvider.notifier);
+  AuthNotifier(this._useCase) : super(AuthState.initial());
 
-  /// コントローラ関数
-  return (String username, String password) async {
+  /// ログイン処理
+  Future<void> login(String username, String password) async {
+    // ローディング開始
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+
     final entity = AuthEntity(username: username, password: password);
-    final result = await useCase.execute(entity);
+    final result = await _useCase.execute(entity);
 
     if (result != null) {
-      authEntity.state = result;
-      authStatus.state = AuthStatus.authenticated;
+      state = state.copyWith(status: AuthStatus.authenticated, user: result);
     } else {
-      authEntity.state = null;
-      authStatus.state = AuthStatus.unauthenticated;
+      state = state.copyWith(
+        status: AuthStatus.unauthenticated,
+        user: null,
+        errorMessage: "ユーザー名またはパスワードが間違っています",
+      );
     }
-  };
-});
+  }
 
-final logoutProvider = Provider((ref) {
-  final authStatus = ref.read(authStatusProvider.notifier);
-  final authEntity = ref.read(authEntityProvider.notifier);
+  /// ログアウト処理
+  void logout() {
+    state = AuthState.initial().copyWith(status: AuthStatus.unauthenticated);
+  }
+}
 
-  return () {
-    authEntity.state = null;
-    authStatus.state = AuthStatus.unauthenticated;
-  };
+/// AuthNotifier を提供する Provider
+final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((
+  ref,
+) {
+  final useCase = ref.watch(authUseCaseProvider);
+  return AuthNotifier(useCase);
 });

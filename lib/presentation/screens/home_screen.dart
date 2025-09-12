@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/auth_provider.dart';
-import '../state/auth_state.dart'; // Ensure this file defines AuthStatus
 import 'login_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -9,8 +8,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authEntity = ref.watch(authEntityProvider);
-    final authStatus = ref.watch(authStatusProvider);
+    final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Home")),
@@ -18,16 +16,13 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Hello, ${authEntity?.username ?? 'Guest'}"),
+            Text("Hello, ${authState.user?.username ?? 'Guest'}"),
             const SizedBox(height: 16),
-            Text("Status: $authStatus"),
+            Text("Status: ${authState.status}"),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                ref.read(authEntityProvider.notifier).state = null;
-                ref.read(authStatusProvider.notifier).state =
-                    AuthStatus.unauthenticated;
-                //Navigator.pop(context);
+                ref.read(authNotifierProvider.notifier).logout();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => const LoginScreen()),

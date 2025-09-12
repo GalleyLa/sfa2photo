@@ -2,24 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/auth_provider.dart';
 import 'home_screen.dart';
-import '../state/auth_state.dart'; // Ensure this file defines AuthStatus
+import '../state/auth_state.dart';
 
-class LoginScreen extends ConsumerWidget {
+// If AuthStatus is defined in auth_provider.dart, ensure it is exported there.
+// Otherwise, define it here or import from the correct file.
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authStatus = ref.watch(authStatusProvider);
-    final authController = ref.read(authControllerProvider);
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
 
-    // final authStatus = ref.watch(authStatusProvider);
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-    // final login = ref.read(authControllerProvider);
-    final _userController = TextEditingController();
-    final _passController = TextEditingController();
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-    ref.listen(authStatusProvider, (previous, next) {
-      if (next == AuthStatus.authenticated) {
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authNotifierProvider);
+
+    // 認証成功で遷移
+    ref.listen(authNotifierProvider, (previous, next) {
+      if (next.status == AuthStatus.authenticated) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -29,32 +41,64 @@ class LoginScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Login")),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _userController,
-              decoration: const InputDecoration(labelText: "ユーザーID"),
-            ),
-            TextField(
-              controller: _passController,
-              decoration: const InputDecoration(labelText: "パスワード"),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-
-            Text("Status: $authStatus"),
+            Text("Status: ${authState.status}"),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                await authController(
-                  _userController.text,
-                  _passController.text,
-                );
-              },
-              child: const Text("Login"),
+            if (authState.errorMessage != null) ...[
+              Text(
+                authState.errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+            ],
+            // ユーザー名入力欄
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(
+                labelText: "Username",
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 16),
+
+            // パスワード入力欄
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "Password",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            if (authState.status == AuthStatus.loading) ...[
+              const CircularProgressIndicator(),
+            ] else ...[
+              // ログインボタン
+              ElevatedButton(
+                onPressed: () async {
+                  final username = _usernameController.text.trim();
+                  final password = _passwordController.text.trim();
+
+                  if (username.isEmpty || password.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("ユーザー名とパスワードを入力してください")),
+                    );
+                    return;
+                  }
+
+                  await ref
+                      .read(authNotifierProvider.notifier)
+                      .login(username, password);
+                },
+                child: const Text("Login"),
+              ),
+            ],
           ],
         ),
       ),
