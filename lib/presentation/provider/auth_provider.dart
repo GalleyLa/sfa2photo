@@ -23,7 +23,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _useCase.execute(entity);
 
     if (result != null) {
-      state = state.copyWith(status: AuthStatus.authenticated, user: result);
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        user: result,
+        errorMessage: null,
+      );
     } else {
       state = state.copyWith(
         status: AuthStatus.unauthenticated,
