@@ -16,7 +16,7 @@ Future<void> main() async {
 
   // .env 読み込み
   // await dotenv.load(fileName: "assets/.env");
-  final env = String.fromEnvironment('ENV', defaultValue: 'dev');
+  const env = String.fromEnvironment('ENV', defaultValue: 'dev');
   await dotenv.load(fileName: 'assets/.env.$env');
 
   // DI初期化
@@ -31,6 +31,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Auth Demo', home: const LoginScreen());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // これを追加するだけ
+      title: 'Auth Demo',
+      home: const LoginScreen(),
+    );
   }
 }

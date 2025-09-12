@@ -1,6 +1,6 @@
 // lib/presentation/provider/auth_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../application/usecases/auth_usecase.dart';
+// import '../../application/usecases/auth_usecase.dart';
 import '../../domain/entity/auth_entity.dart';
 import '../state/auth_state.dart';
 import '../../di/providers.dart';
@@ -31,5 +31,15 @@ final authControllerProvider = Provider((ref) {
       authEntity.state = null;
       authStatus.state = AuthStatus.unauthenticated;
     }
+  };
+});
+
+final logoutProvider = Provider((ref) {
+  final authStatus = ref.read(authStatusProvider.notifier);
+  final authEntity = ref.read(authEntityProvider.notifier);
+
+  return () {
+    authEntity.state = null;
+    authStatus.state = AuthStatus.unauthenticated;
   };
 });

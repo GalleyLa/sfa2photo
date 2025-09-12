@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/auth_provider.dart';
-// import '../state/auth_state.dart';
+import 'home_screen.dart';
+import '../state/auth_state.dart'; // Ensure this file defines AuthStatus
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,15 @@ class LoginScreen extends ConsumerWidget {
     // final login = ref.read(authControllerProvider);
     final _userController = TextEditingController();
     final _passController = TextEditingController();
+
+    ref.listen(authStatusProvider, (previous, next) {
+      if (next == AuthStatus.authenticated) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(title: const Text("Login")),
