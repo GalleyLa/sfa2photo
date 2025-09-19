@@ -115,8 +115,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   }
 
                   await ref
-                      .read(authNotifierProvider.notifier)
-                      .login(username, password);
+                      .read(
+                        authNotifierProvider.notifier,
+                      ) // AuthNotifierProviderのnotifierを取得
+                      .login(
+                        username,
+                        password,
+                      ); // auth_provider loginメソッドを呼び出し
                 },
                 child: const Text("Login"),
               ),

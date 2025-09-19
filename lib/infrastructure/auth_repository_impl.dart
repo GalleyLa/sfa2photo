@@ -3,6 +3,15 @@ import '../../domain/entity/auth_entity.dart';
 import '../../domain/repository/auth_repository.dart';
 import './service/auth_api_service.dart';
 
+// AuthRepository の具体的な実装
+// API 通信とセキュアストレージの操作を担当
+// AuthApiService と FlutterSecureStorage を注入して使用
+// ここで例外が発生する可能性がある
+// 例: ネットワークエラー、認証エラー、ストレージエラーなど
+// 例外は上位に伝播させ、呼び出し元で適切に処理する
+// 例: AuthUseCase や AuthNotifier でキャッチして状態を更新する
+// 例外処理の詳細は省略し、簡易的に実装
+
 class AuthRepositoryImpl implements AuthRepository {
   final AuthApiService apiService;
   final FlutterSecureStorage secureStorage;
@@ -15,16 +24,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
     if (result['success'] == true) {
       final data = result['data'] as Map<String, dynamic>;
-      // return entity.copyWith(
-      //   id: data['id']?.toString(),
-      //   name: data['name']?.toString(),
-      // );
-      // final cookies =
-      //     result['cookies'] as List<String>; // ← AuthApiService で抽出して返すように修正
       final authEntity = entity.copyWith(
         id: data['id']?.toString(),
         name: data['name']?.toString(),
-        // cookies: cookies,
       );
 
       await saveCredentials(authEntity);
@@ -44,12 +46,6 @@ class AuthRepositoryImpl implements AuthRepository {
     if (entity.name != null) {
       await secureStorage.write(key: 'user_name', value: entity.name);
     }
-    // if (entity.cookies != null) {
-    //   await secureStorage.write(
-    //     key: 'cookies',
-    //     value: entity.cookies!.join(';'),
-    //   );
-    // }
   }
 
   @override
@@ -60,25 +56,19 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final id = await secureStorage.read(key: 'user_id');
     final name = await secureStorage.read(key: 'user_name');
-    // final cookieStr = await secureStorage.read(key: 'cookies');
-    // final cookies = cookieStr?.split(';');
 
     return AuthEntity(
       username: username,
       password: password,
       id: id,
       name: name,
-      // cookies: cookies,
     );
   }
 
   @override
   Future<Map<String, String>> buildAuthHeaders(AuthEntity entity) async {
     final headers = <String, String>{};
-    // Uncomment and adjust the following lines if your AuthEntity has cookies or id fields
-    // if (entity.cookies != null) {
-    //   headers['Cookie'] = entity.cookies!.join('; ');
-    // }
+
     if (entity.id != null) {
       headers['X-User-Id'] = entity.id!;
     }

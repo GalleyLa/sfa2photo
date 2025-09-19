@@ -1,4 +1,7 @@
+// lib/infrastructure/service/base_api_service.dart
+
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'auth_api_service.dart';
 
@@ -28,12 +31,19 @@ class BaseApiService {
     final userId = await secureStorage.read(key: 'user_id');
     if (userId == null) throw Exception("未ログイン状態です");
 
-    final qp = {'id': userId, ...?queryParameters};
+    final qp = {...?queryParameters};
+
+    final cookies = await authApiService.cookieJar.loadForRequest(
+      //Uri.parse(authApiService.dio.options.baseUrl),
+      Uri.parse("http://172.30.100.160/oec/"),
+    );
+    debugPrint("BaseApiServiceから見えるCookie: $cookies");
 
     return await authApiService.dio.post<T>(
       path,
       data: data,
       queryParameters: qp,
+      options: Options(contentType: Headers.formUrlEncodedContentType),
     );
   }
 }

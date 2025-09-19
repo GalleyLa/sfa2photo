@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/auth_provider.dart';
+//import '../provider/schedule_providers.dart';
+import '../provider/schedule_notifier_provider.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -29,6 +31,18 @@ class HomeScreen extends ConsumerWidget {
                 );
               },
               child: const Text("Logout"),
+            ),
+            Text("Hello, ${authState.user?.username ?? 'Guest'}"),
+            const SizedBox(height: 16),
+            Text("Status: ${authState.status}"),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                await ref.read(scheduleNotifierProvider.notifier).fetch();
+                // final schedulesState = ref.read(scheduleNotifierProvider);
+              },
+
+              child: const Text("スケジュール一覧"),
             ),
           ],
         ),

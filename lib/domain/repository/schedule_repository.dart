@@ -1,3 +1,4 @@
+// lib/domain/repository/schedule_repository.dart
 import '../entity/schedule_entity.dart';
 
 abstract class ScheduleRepository {

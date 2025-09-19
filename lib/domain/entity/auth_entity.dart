@@ -3,14 +3,14 @@ class AuthEntity {
   final String password;
   final String? id; // 認証成功後に得られる
   final String? name; // 認証成功後に得られる
-  final List<String>? cookies; // Cookieを文字列で保持
+  // final List<String>? cookies; // Cookieを文字列で保持
 
   AuthEntity({
     required this.username,
     required this.password,
     this.id,
     this.name,
-    this.cookies,
+    // this.cookies,
   });
 
   AuthEntity copyWith({String? id, String? name, List<String>? cookies}) {
@@ -19,7 +19,7 @@ class AuthEntity {
       password: password,
       id: id ?? this.id,
       name: name ?? this.name,
-      cookies: cookies ?? this.cookies,
+      // cookies: cookies ?? this.cookies,
     );
   }
 }
