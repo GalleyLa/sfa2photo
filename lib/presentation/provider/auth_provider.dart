@@ -89,38 +89,3 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((
   final useCase = ref.watch(authUseCaseProvider);
   return AuthNotifier(useCase);
 });
-
-/*
-/// AuthNotifier を提供する Provider
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((
-  ref,
-) {
-  final useCase = ref.watch(authUseCaseProvider);
-  return AuthNotifier(useCase);
-});
-
-/// FlutterSecureStorage Provider
-final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
-  return const FlutterSecureStorage();
-});
-
-/// AuthApiService Provider
-final authApiServiceProvider = Provider<AuthApiService>((ref) {
-  final baseUrl = dotenv.env['API_BASE_URL'] ?? "https://fallback.example.com";
-  //final baseUrl = normalizeBaseUrl(env.BASE_URL, tenantId);
-  return AuthApiService(baseUrl);
-});
-
-/// AuthRepository Provider
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final apiService = ref.watch(authApiServiceProvider);
-  final storage = ref.watch(secureStorageProvider);
-  return AuthRepositoryImpl(apiService, storage);
-});
-
-/// AuthUseCase Provider
-final authUseCaseProvider = Provider<AuthUseCase>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return AuthUseCase(repo);
-});
-*/

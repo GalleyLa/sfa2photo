@@ -32,9 +32,7 @@ class HomeScreen extends ConsumerWidget {
               },
               child: const Text("Logout"),
             ),
-            Text("Hello, ${authState.user?.username ?? 'Guest'}"),
-            const SizedBox(height: 16),
-            Text("Status: ${authState.status}"),
+
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {

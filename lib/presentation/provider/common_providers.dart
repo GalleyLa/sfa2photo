@@ -8,6 +8,7 @@ import '../../infrastructure/service/schedule_api_service.dart';
 import '../../infrastructure/schedule_repository_impl.dart';
 import '../../domain/repository/schedule_repository.dart';
 import '../../application/usecases/schedule_usecase.dart';
+import '../../shared/utils/date_formatter_provider.dart';
 
 // ----------------------------
 // SecureStorage Provider
@@ -29,8 +30,9 @@ final authApiServiceProvider = Provider<AuthApiService>((ref) {
 // ----------------------------
 final baseApiServiceProvider = Provider<BaseApiService>((ref) {
   final authApiService = ref.watch(authApiServiceProvider); // 共通インスタンス
-  final storage = ref.watch(secureStorageProvider);
-  return BaseApiService(authApiService, storage);
+  return BaseApiService(authApiService);
+  //final storage = ref.watch(secureStorageProvider);
+  //return BaseApiService(authApiService, storage);
 });
 
 // ----------------------------
@@ -38,7 +40,12 @@ final baseApiServiceProvider = Provider<BaseApiService>((ref) {
 // ----------------------------
 final scheduleApiServiceProvider = Provider<ScheduleApiService>((ref) {
   final baseApiService = ref.watch(baseApiServiceProvider);
-  return ScheduleApiService(baseApiService);
+  final storage = ref.watch(secureStorageProvider);
+  return ScheduleApiService(
+    baseApiService,
+    storage,
+    ref.watch(dateFormatterProvider),
+  );
 });
 
 // ----------------------------

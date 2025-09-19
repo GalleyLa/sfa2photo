@@ -10,10 +10,6 @@ class ScheduleUseCase {
 
   ScheduleUseCase(this.repository);
 
-  // domain/repository/schedule_repository.dart の fetchRemote を呼び出す
-  // Future<List<ScheduleEntity>> fetchRemoteSchedules() async {
-  //   return await repository.fetchRemote();
-  // }
   Future<List<ScheduleEntity>> execute() async {
     // 例: リモートから取得してローカルに保存もする
     final schedules = await repository.fetchRemote();

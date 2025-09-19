@@ -12,7 +12,7 @@ class AuthApiService {
   final String baseUrl;
   late Dio _dio;
   late CookieJar cookieJar;
-  /*
+
   AuthApiService(this.baseUrl) {
     _dio = Dio(
       BaseOptions(
@@ -22,13 +22,13 @@ class AuthApiService {
         headers: {'Accept': 'application/json'},
       ),
     );
-    _cookieJar = CookieJar();
-    _dio.interceptors.add(CookieManager(_cookieJar)); // Cookie自動管理
+    cookieJar = CookieJar();
+    _dio.interceptors.add(CookieManager(cookieJar)); // Cookie自動管理
     _dio.interceptors.add(
       LogInterceptor(requestBody: true, responseBody: true),
     );
   }
-  */
+  /*
   AuthApiService(this.baseUrl)
     : _dio = Dio(BaseOptions(baseUrl: baseUrl)),
       cookieJar = CookieJar() {
@@ -37,6 +37,7 @@ class AuthApiService {
       LogInterceptor(requestBody: true, responseBody: true),
     );
   }
+  */
 
   Dio get dio => _dio; // 他APIサービスで再利用するために公開
 
