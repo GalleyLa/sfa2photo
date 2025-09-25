@@ -6,7 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // import 'di/providers.dart';
-import 'presentation/screens/login_screen.dart';
+import 'presentation/pages/login_screen.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 //import 'package:dcdg/dcdg.dart'; //クラス図作成ツール用
 //flutter pub global run dcdgで表示される値をPlantUML Editorにコピペしてクラス図を生成できる
@@ -23,7 +24,9 @@ Future<void> main() async {
   // final baseUrl = dotenv.env['API_BASE_URL']!;
   // setupLocator(baseUrl: baseUrl);
 
-  runApp(const ProviderScope(child: MyApp()));
+  await initializeDateFormatting('ja_JP').then((_) {
+    runApp(const ProviderScope(child: MyApp()));
+  });
 }
 
 class MyApp extends StatelessWidget {

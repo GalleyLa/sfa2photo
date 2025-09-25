@@ -1,0 +1,159 @@
+import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+
+import '../../domain/entity/schedule_entity.dart';
+import '../../domain/value/schedule_type.dart';
+import '../../domain/mapper/schedule_mapper.dart';
+
+import '../../application/usecases/group_schedules_usecase.dart';
+
+class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
+  @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+
+  late final List<ScheduleEntity> schedules;
+  late final Map<DateTime, List<ScheduleEntity>> scheduleMap;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final today = DateTime.now();
+    _selectedDay = DateTime(today.year, today.month, today.day); // ← 今日を初期選択
+    _focusedDay = _selectedDay!;
+    // scheduleMap の初期化などもここで
+    // scheduleMap = GroupSchedulesByDayUseCase().execute(schedules);
+
+    // 仮データ
+    schedules = [
+      ScheduleEntity(
+        mode: 'member',
+        member_id: '1',
+        id: '101',
+        mouse_title: '訪問先１',
+        start_date: DateTime(2025, 9, 22),
+        end_date: DateTime(2025, 9, 22),
+        apl_resource_data_key: 'meeting',
+      ),
+      ScheduleEntity(
+        mode: 'report',
+        member_id: '1',
+        id: '102',
+        mouse_title: '訪問先２',
+        start_date: DateTime(2025, 9, 23),
+        end_date: DateTime(2025, 9, 25),
+        apl_resource_data_key: 'meeting',
+      ),
+      ScheduleEntity(
+        mode: 'meeting', // 未知の値
+        member_id: '1',
+        id: '103',
+        mouse_title: '訪問先３',
+        start_date: DateTime(2025, 9, 25),
+        end_date: DateTime(2025, 9, 26),
+        apl_resource_data_key: 'meeting',
+      ),
+    ];
+
+    scheduleMap = GroupSchedulesByDayUseCase().execute(schedules);
+  }
+
+  List<ScheduleEntity> _getEventsForDay(DateTime day) {
+    final normalized = DateTime(day.year, day.month, day.day);
+    return scheduleMap[normalized] ?? [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final events = _selectedDay != null ? _getEventsForDay(_selectedDay!) : [];
+    final dateTimeFormat = DateFormat('MM/dd HH:mm'); // 例: 09/22 09:00
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('スケジュールカレンダー')),
+      body: Column(
+        children: [
+          /// --- カレンダー表示 ---
+          TableCalendar<ScheduleEntity>(
+            locale: 'ja_JP',
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            eventLoader: _getEventsForDay,
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) {
+                if (events.isEmpty) return null;
+
+                // 色付き丸だけ表示
+                return Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 2,
+                  runSpacing: 2,
+                  children: events.take(3).map((e) {
+                    final type = ScheduleMapper.toType(e.mode);
+                    return Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: Color(type.colorValue),
+                        shape: BoxShape.circle,
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          /// --- 選択した日の予定をリスト表示 ---
+          Expanded(
+            child: events.isEmpty
+                ? const Center(child: Text('予定はありません'))
+                : ListView.builder(
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final e = events[index];
+                      final type = ScheduleMapper.toType(e.mode);
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Color(type.colorValue),
+                          child: Text(
+                            type.label, // ← 日本語1文字
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        title: Text(e.mouse_title),
+                        subtitle: Text(
+                          !isSameDay(e.start_date, e.end_date)
+                              ? '${dateTimeFormat.format(e.start_date)} 〜 ${dateTimeFormat.format(e.end_date)}'
+                              : '${dateTimeFormat.format(e.start_date)} 〜 ${dateTimeFormat.format(e.end_date)}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}

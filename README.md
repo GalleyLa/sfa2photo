@@ -22,65 +22,34 @@ Clean Architecture では大きく以下のレイヤーに分けるのが一般�
 
 クリーンアーキテクチャ構成図
 ```
-lib
-├─ application // UseCase
-|  ├─ usecases
-|     ├─ auth_usecase.dart // 認証 → 成功時に保存
-|     ├─ authenticate() → 成功時 Cookie + id 保存
-|     ├─ loadCredentials() → 保存済み Cookie + id を復元
-|
-├─ di
-|
-├─  domain // Entity & Repository 抽象
-|   ├─ AuthEntity (username, password, id, name, cookies)
-|   └─ AuthRepository 抽象
-|       - authenticate()
-|       - saveCredentials()
-|       - loadCredentials()
-|       - attachAuthHeaders(request) ← 他API呼び出し時に利用
-|
-├─ infrastructure 層（実装）
-|  ├─ AuthRepositoryImpl
-|     ├─ AuthApiService（既存の認証API呼び出し）
-|     └─ SecureStorageService（flutter_secure_storage を利用）
-|
-├─presentation  層（UI / State管理）
-|  └─ LoginPage（ユーザ入力 → ViewModel呼び出し）
-|     ├─ Riverpodでログイン状態 & AuthEntity を監視
-|     ├─ 起動時に loadCredentials() でログイン状態を再現
-  └─ Riverpod Provider
-       └─ AuthUseCase
-            └─ AuthRepository
-                 ├─ AuthApiService (ログイン & Cookie管理)
-                 ├─ SecureStorage (id, username, password保存)
-                 └─ BaseApiService (全API呼び出し時にid付与)
-                          └─ SomeOtherApiService など
-├─
 
+lib/
+├── domain/
+│   ├── entity/auth_entity.dart
+│   └── repository/auth_repository.dart
+├── application/
+│   └── usecases/auth_usecase.dart
+├── infrastructure/
+│   ├── auth_repository_impl.dart
+│   ├──  service/auth_api_service.
+│   ├── local/
+│   │   ├── db/
+│   │   │   ├── app_database.dart      // DB初期化、接続
+│   │   │   ├── tables/
+│   │   │   │   └── user_table.dart   // カラム名定義
+│   │   └── dao/
+│   │       └── user_dao.dart         // DB操作（CRUD）
+│   └── models/
+│       └── user_model.dart           // DB ↔ アプリのModel
+├── presentation/
+│   ├── provider
+│   │   ├── core_provider.dart       // Dio, CookieJar, Logger など共通
+│   │   ├── auth_provider.dart       // 認証関連の Repo / UseCase / State
+│   │   ├── schedule_provider.dart   // スケジュール関連の Repo / UseCase / State
+│   │   ├── customer_provider.dart   // 顧客関連...
+│   └── state/auth_state.dart
+└── main.dart
 
-
-
-application  層（UseCase）
-  └─ AuthUseCase（認証 → 成功時に保存）
-
-domain  層（Entity & Repository 抽象）
-  ├─ AuthEntity（ユーザ名・パスワード）
-  └─ AuthRepository（authenticate(User,Pass), saveToStorage(User,Pass)）
-
-infrastructure 層（実装）
-  ├─ AuthRepositoryImpl
-       ├─ AuthApiService（既存の認証API呼び出し）
-       └─ SecureStorageService（flutter_secure_storage を利用）
-
-## アーキテクチャ概要
-Presentation
-  └─ Riverpod Provider
-       └─ AuthUseCase
-            └─ AuthRepository
-                 ├─ AuthApiService (ログイン & Cookie管理)
-                 ├─ SecureStorage (id, username, password保存)
-                 └─ BaseApiService (全API呼び出し時にid付与)
-                          └─ SomeOtherApiService など
 ```
 
 # DB の責務と配置（クリーンアーキテクチャ寄り）

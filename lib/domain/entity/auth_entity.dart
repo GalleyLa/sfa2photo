@@ -1,3 +1,4 @@
+// lib/domain/entity/auth_entity.dart
 class AuthEntity {
   final String username;
   final String password;
