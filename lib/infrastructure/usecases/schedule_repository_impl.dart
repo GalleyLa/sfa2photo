@@ -1,8 +1,8 @@
 // lib/infrastructure/schedule_repository_impl.dart
 
-import '../../domain/entity/schedule_entity.dart';
-import '../../domain/repository/schedule_repository.dart';
-import './service/schedule_api_service.dart';
+import '../../../domain/entity/schedule_entity.dart';
+import '../../../domain/repository/schedule_repository.dart';
+import '../service/schedule_api_service.dart';
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final ScheduleApiService apiService;

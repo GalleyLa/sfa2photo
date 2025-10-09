@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../infrastructure/service/auth_api_service.dart';
 import '../../infrastructure/service/base_api_service.dart';
 import '../../infrastructure/service/schedule_api_service.dart';
-import '../../infrastructure/schedule_repository_impl.dart';
+import '../../infrastructure/usecases/schedule_repository_impl.dart';
 import '../../domain/repository/schedule_repository.dart';
 import '../../application/usecases/schedule_usecase.dart';
 import '../../shared/utils/date_formatter_provider.dart';

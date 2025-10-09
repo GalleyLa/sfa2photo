@@ -1,42 +1,42 @@
 // lib/domain/entity/schedule_entity.dart
 class ScheduleEntity {
   final String mode; // "schedule" or "report"
-  final String member_id; // 担当者ID
+  final String memberId; // 担当者ID
   final String id; // スケジュールID
-  final String mouse_title; // マウスオーバー用タイトル
-  final DateTime start_date; // 開始日
-  final DateTime end_date; // 終了日
-  final String apl_resource_data_key; // 表示用タイトル
+  final String mouseTitle; // マウスオーバー用タイトル
+  final DateTime startDate; // 開始日
+  final DateTime endDate; // 終了日
+  final String aplResourceDataKey; // 表示用タイトル
 
   ScheduleEntity({
     required this.mode,
-    required this.member_id,
+    required this.memberId,
     required this.id,
-    required this.mouse_title,
-    required this.start_date,
-    required this.end_date,
-    required this.apl_resource_data_key,
+    required this.mouseTitle,
+    required this.startDate,
+    required this.endDate,
+    required this.aplResourceDataKey,
   });
 
   factory ScheduleEntity.fromMap(Map<String, dynamic> map) {
     return ScheduleEntity(
       mode: map['mode'] as String,
-      member_id: map['member_id'] as String,
+      memberId: map['memberId'] as String,
       id: map['id'] as String,
-      mouse_title: map['mouse_title'] as String,
-      start_date: DateTime.parse(map['start_date']),
-      end_date: DateTime.parse(map['end_date']),
-      apl_resource_data_key: map['apl_resource_data_key'] as String,
+      mouseTitle: map['mouseTitle'] as String,
+      startDate: DateTime.parse(map['startDate']),
+      endDate: DateTime.parse(map['endDate']),
+      aplResourceDataKey: map['aplResourceDataKey'] as String,
     );
   }
 
   Map<String, dynamic> toMap() => {
     'mode': mode,
-    'member_id': member_id,
+    'memberId': memberId,
     'id': id,
-    'mouse_title': mouse_title,
-    'start_date': start_date.toIso8601String(),
-    'end_date': end_date.toIso8601String(),
-    'apl_resource_data_key': apl_resource_data_key,
+    'mouseTitle': mouseTitle,
+    'startDate': startDate.toIso8601String(),
+    'endDate': endDate.toIso8601String(),
+    'aplResourceDataKey': aplResourceDataKey,
   };
 }

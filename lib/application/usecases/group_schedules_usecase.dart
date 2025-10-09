@@ -9,8 +9,8 @@ class GroupSchedulesByDayUseCase {
     final map = <DateTime, List<ScheduleEntity>>{};
 
     for (final schedule in schedules) {
-      DateTime day = schedule.start_date;
-      while (!day.isAfter(schedule.end_date)) {
+      DateTime day = schedule.startDate;
+      while (!day.isAfter(schedule.endDate)) {
         final normalized = DateTime(day.year, day.month, day.day);
         map.putIfAbsent(normalized, () => []);
         map[normalized]!.add(schedule);
