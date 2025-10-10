@@ -6,8 +6,9 @@ import '../service/schedule_api_service.dart';
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final ScheduleApiService apiService;
+  final ScheduleLocalDb localDb;
 
-  ScheduleRepositoryImpl({required this.apiService});
+  ScheduleRepositoryImpl({required this.apiService, required this.localDb});
 
   @override
   Future<List<ScheduleEntity>> fetchRemote() async {
@@ -39,5 +40,11 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   Future<List<ScheduleEntity>> getAllCustomers() async {
     // TODO: Implement getAllCustomers logic or throw UnimplementedError if not supported
     throw UnimplementedError('getAllCustomers is not implemented');
+  }
+
+  @override
+  Future<List<ScheduleEntity>> getSchedules() async {
+    // TODO: Implement getSchedules logic or throw UnimplementedError if not supported
+    throw UnimplementedError('getSchedules is not implemented');
   }
 }

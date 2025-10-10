@@ -39,27 +39,36 @@ class _CalendarPageState extends State<CalendarPage> {
         memberId: '1',
         id: '101',
         mouseTitle: '訪問先１',
-        startDate: DateTime(2025, 9, 22),
-        endDate: DateTime(2025, 9, 22),
+        startDate: DateTime(2025, 10, 22),
+        endDate: DateTime(2025, 10, 22),
         aplResourceDataKey: 'meeting',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        deletedAt: null,
       ),
       ScheduleEntity(
         mode: 'report',
         memberId: '1',
         id: '102',
         mouseTitle: '訪問先２',
-        startDate: DateTime(2025, 9, 23),
-        endDate: DateTime(2025, 9, 25),
+        startDate: DateTime(2025, 10, 23),
+        endDate: DateTime(2025, 10, 25),
         aplResourceDataKey: 'meeting',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        deletedAt: null,
       ),
       ScheduleEntity(
         mode: 'meeting', // 未知の値
         memberId: '1',
         id: '103',
         mouseTitle: '訪問先３',
-        startDate: DateTime(2025, 9, 25),
-        endDate: DateTime(2025, 9, 26),
+        startDate: DateTime(2025, 10, 25),
+        endDate: DateTime(2025, 10, 26),
         aplResourceDataKey: 'meeting',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        deletedAt: null,
       ),
     ];
 
@@ -77,7 +86,24 @@ class _CalendarPageState extends State<CalendarPage> {
     final dateTimeFormat = DateFormat('MM/dd HH:mm'); // 例: 09/22 09:00
 
     return Scaffold(
-      appBar: AppBar(title: const Text('スケジュールカレンダー')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Login"),
+        leadingWidth: 85, //leadingWidthを設定する
+        leading: TextButton(
+          child: const Text(
+            '〈 戻る',
+            style: TextStyle(
+              //color: Colors.white, //文字の色を白にする
+              fontWeight: FontWeight.bold, //文字を太字する
+              fontSize: 18.0, //文字のサイズを調整する
+            ),
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+          //automaticallyImplyLeading: false, // 戻るボタンを非表示にする
+          //leading: null, // 完全に戻るボタンを無くす
+        ),
+      ),
       body: Column(
         children: [
           /// --- カレンダー表示 ---
@@ -141,11 +167,11 @@ class _CalendarPageState extends State<CalendarPage> {
                             ),
                           ),
                         ),
-                        title: Text(e.mouse_title),
+                        title: Text(e.mouseTitle),
                         subtitle: Text(
-                          !isSameDay(e.start_date, e.end_date)
-                              ? '${dateTimeFormat.format(e.start_date)} 〜 ${dateTimeFormat.format(e.end_date)}'
-                              : '${dateTimeFormat.format(e.start_date)} 〜 ${dateTimeFormat.format(e.end_date)}',
+                          !isSameDay(e.startDate, e.endDate)
+                              ? '${dateTimeFormat.format(e.startDate)} 〜 ${dateTimeFormat.format(e.endDate)}'
+                              : '${dateTimeFormat.format(e.startDate)} 〜 ${dateTimeFormat.format(e.endDate)}',
                           style: const TextStyle(fontSize: 12),
                         ),
                       );

@@ -1,3 +1,7 @@
+//
+
+import 'package:sqflite/sqflite.dart';
+
 class ScheduleTable {
   static const String tableName = 'schedules';
   static const String mode = 'mode';
@@ -12,8 +16,10 @@ class ScheduleTable {
   static const String deletedAt = 'deleted_at'; // 削除日。未削除ならNULL
 
   // CREATE TABLE 文などもまとめることが可能
-  static const String createTableQuery =
-      '''
+  //static const String createTableQuery =
+  /// CREATE TABLE 文を返す
+  static String createTableQuery() {
+    return '''
     CREATE TABLE $tableName (
       $id TEXT PRIMARY KEY,
       $mode TEXT NOT NULL,
@@ -27,4 +33,10 @@ class ScheduleTable {
       $deletedAt TEXT
     )
   ''';
+  }
+
+  /// テーブル作成をDBに適用
+  static Future<void> createTable(Database db) async {
+    await db.execute(createTableQuery());
+  }
 }

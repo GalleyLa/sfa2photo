@@ -4,28 +4,30 @@ import '../../domain/entity/schedule_entity.dart';
 import 'common_providers.dart';
 import '../state/schedule_state.dart';
 
-class ScheduleNotifier extends StateNotifier<AsyncValue<List<ScheduleEntity>>> {
-  final ScheduleUseCase _useCase;
+/// --- AsyncNotifier版 ScheduleNotifier ---
+final scheduleNotifierProvider =
+    AsyncNotifierProvider<ScheduleNotifier, List<ScheduleEntity>>(
+      ScheduleNotifier.new,
+    );
 
-  ScheduleNotifier(this._useCase) : super(const AsyncValue.data([]));
+class ScheduleNotifier extends AsyncNotifier<List<ScheduleEntity>> {
+  /// build() は初期ロード時に呼ばれる
+  @override
+  Future<List<ScheduleEntity>> build() async {
+    final useCase = await ref.watch(scheduleUseCaseProvider.future);
+    return useCase.execute();
+  }
 
+  /// 手動で再取得（＝「同期ボタン」で再読込など）
   Future<void> fetch() async {
     state = const AsyncValue.loading();
 
     try {
-      final schedules = await _useCase.execute();
+      final useCase = await ref.watch(scheduleUseCaseProvider.future);
+      final schedules = await useCase.execute();
       state = AsyncValue.data(schedules);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
 }
-
-// Notifier Provider
-final scheduleNotifierProvider =
-    StateNotifierProvider<ScheduleNotifier, AsyncValue<List<ScheduleEntity>>>((
-      ref,
-    ) {
-      final useCase = ref.watch(scheduleUseCaseProvider);
-      return ScheduleNotifier(useCase);
-    });

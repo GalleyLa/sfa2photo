@@ -16,7 +16,24 @@ class HomeScreen extends ConsumerWidget {
     final schedulesAsync = ref.watch(scheduleNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Home")),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Login"),
+        leadingWidth: 85, //leadingWidthを設定する
+        leading: TextButton(
+          child: const Text(
+            '〈 戻る',
+            style: TextStyle(
+              //color: Colors.white, //文字の色を白にする
+              fontWeight: FontWeight.bold, //文字を太字する
+              fontSize: 18.0, //文字のサイズを調整する
+            ),
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+          //automaticallyImplyLeading: false, // 戻るボタンを非表示にする
+          //leading: null, // 完全に戻るボタンを無くす
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

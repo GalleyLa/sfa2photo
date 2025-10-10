@@ -68,7 +68,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Login"),
+        leadingWidth: 85, //leadingWidthを設定する
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
