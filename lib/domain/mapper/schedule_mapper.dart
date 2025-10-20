@@ -1,6 +1,6 @@
 // lib/domain/mapper/schedule_mapper.dart
 
-import '../entity/schedule_entity.dart';
+//import '../entity/schedule_entity.dart';
 import '../value/schedule_type.dart';
 
 class ScheduleMapper {

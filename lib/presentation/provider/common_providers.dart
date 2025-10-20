@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sfa2photo/infrastructure/local/datasources/schedule_local_datasource.dart';
 
 import '../../infrastructure/service/auth_api_service.dart';
 import '../../infrastructure/service/base_api_service.dart';
@@ -55,15 +56,23 @@ final scheduleApiServiceProvider = Provider<ScheduleApiService>((ref) {
 // ----------------------------
 // Local DB Provider
 // ----------------------------
-final scheduleLocalDbProvider = FutureProvider<ScheduleLocalDb>((ref) async {
+final scheduleLocalDbProvider = FutureProvider<ScheduleLocalDataSource>((
+  ref,
+) async {
   //final db = ref.watch(databaseProvider).value;
   final db = await ref.watch(databaseProvider.future);
   //if (db == null) {
   //  throw Exception('Database is not ready');
   //}
-  return ScheduleLocalDbImpl(db);
+  return ScheduleLocalDataSource(db);
 });
 
+//final scheduleLocalDataSourceProvider = FutureProvider<ScheduleLocalDataSource>(
+//  (ref) async {
+//    final db = await ref.watch(databaseProvider.future);
+//    return ScheduleLocalDataSource(db);
+//  },
+//);
 // ----------------------------
 // ScheduleRepository Provider
 // ----------------------------

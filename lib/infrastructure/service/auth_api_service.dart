@@ -66,9 +66,7 @@ class AuthApiService {
         throw Exception("member_idがCookieに含まれていません");
       }
 
-      final debugcookies = await cookieJar.loadForRequest(
-        Uri.parse("http://172.30.100.160/oec/"),
-      );
+      final debugcookies = await cookieJar.loadForRequest(Uri.parse(baseUrl));
       debugPrint("保存されたCookie: $debugcookies");
       debugPrint("member_id: ${memberCookie.value}");
 

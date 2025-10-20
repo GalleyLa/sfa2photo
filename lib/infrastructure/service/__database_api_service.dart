@@ -1,6 +1,6 @@
 // lib/infrastructure/service/database_api_service.dart
 
-import '../local/dao/schedule_dao.dart';
+import '../local/_dao/_schedule_dao.dart';
 
 class ScheduleLocalDb {
   final ScheduleDao scheduleDao;

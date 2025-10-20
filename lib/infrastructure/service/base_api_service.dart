@@ -33,13 +33,7 @@ class BaseApiService {
     // if (userId == null) throw Exception("未ログイン状態です");
 
     final qp = {...?queryParameters};
-    /*
-    final cookies = await authApiService.cookieJar.loadForRequest(
-      //Uri.parse(authApiService.dio.options.baseUrl),
-      Uri.parse("http://172.30.100.160/oec/"),
-    );
-    debugPrint("BaseApiServiceから見えるCookie: $cookies");
-    */
+
     return await authApiService.dio.post<T>(
       path,
       data: data,

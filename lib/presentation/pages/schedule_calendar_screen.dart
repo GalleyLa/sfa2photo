@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -7,20 +8,24 @@ import '../../domain/value/schedule_type.dart';
 import '../../domain/mapper/schedule_mapper.dart';
 
 import '../../application/usecases/group_schedules_usecase.dart';
+//import '../provider/database_provider.dart';
+import '../../presentation/provider/common_providers.dart';
 
-class CalendarPage extends StatefulWidget {
+class CalendarPage extends ConsumerStatefulWidget {
   const CalendarPage({super.key});
 
   @override
-  State<CalendarPage> createState() => _CalendarPageState();
+  ConsumerState<CalendarPage> createState() => _CalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
+class _CalendarPageState extends ConsumerState<CalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  late final List<ScheduleEntity> schedules;
-  late final Map<DateTime, List<ScheduleEntity>> scheduleMap;
+  Map<DateTime, List<ScheduleEntity>> scheduleMap = {};
+
+  //late final List<ScheduleEntity> schedules;
+  //late final Map<DateTime, List<ScheduleEntity>> scheduleMap;
 
   @override
   void initState() {
@@ -29,10 +34,12 @@ class _CalendarPageState extends State<CalendarPage> {
     final today = DateTime.now();
     _selectedDay = DateTime(today.year, today.month, today.day); // ← 今日を初期選択
     _focusedDay = _selectedDay!;
+    // Map<DateTime, List<ScheduleEntity>> scheduleMap = {};
     // scheduleMap の初期化などもここで
     // scheduleMap = GroupSchedulesByDayUseCase().execute(schedules);
 
     // 仮データ
+    /*
     schedules = [
       ScheduleEntity(
         mode: 'member',
@@ -71,8 +78,9 @@ class _CalendarPageState extends State<CalendarPage> {
         deletedAt: null,
       ),
     ];
+    */
 
-    scheduleMap = GroupSchedulesByDayUseCase().execute(schedules);
+    //scheduleMap = GroupSchedulesByDayUseCase().execute(schedules);
   }
 
   List<ScheduleEntity> _getEventsForDay(DateTime day) {
@@ -82,13 +90,15 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    final events = _selectedDay != null ? _getEventsForDay(_selectedDay!) : [];
+    //final events = _selectedDay != null ? _getEventsForDay(_selectedDay!) : [];
     final dateTimeFormat = DateFormat('MM/dd HH:mm'); // 例: 09/22 09:00
+    // RiverpodからUseCaseを取得（非同期初期化）
+    final useCaseAsync = ref.watch(scheduleUseCaseProvider);
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Login"),
+        title: const Text("スケジュールカレンダー"),
         leadingWidth: 85, //leadingWidthを設定する
         leading: TextButton(
           child: const Text(
@@ -104,6 +114,110 @@ class _CalendarPageState extends State<CalendarPage> {
           //leading: null, // 完全に戻るボタンを無くす
         ),
       ),
+      body: useCaseAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('エラー: $err')),
+        data: (useCase) {
+          // DBからスケジュールをロード
+          return FutureBuilder<List<ScheduleEntity>>(
+            future: useCase.execute(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('読み込みエラー: ${snapshot.error}'));
+              }
+              final schedules = snapshot.data ?? [];
+
+              // Group by day
+              scheduleMap = GroupSchedulesByDayUseCase().execute(schedules);
+
+              final events = _selectedDay != null
+                  ? _getEventsForDay(_selectedDay!)
+                  : [];
+
+              return Column(
+                children: [
+                  /// --- カレンダー表示 ---
+                  TableCalendar<ScheduleEntity>(
+                    locale: 'ja_JP',
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                    },
+                    eventLoader: _getEventsForDay,
+                    calendarBuilders: CalendarBuilders(
+                      markerBuilder: (context, date, events) {
+                        if (events.isEmpty) return null;
+                        return Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 2,
+                          runSpacing: 2,
+                          children: events.take(3).map((e) {
+                            final type = ScheduleMapper.toType(e.mode);
+                            return Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: Color(type.colorValue),
+                                shape: BoxShape.circle,
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  /// --- 選択した日の予定リスト ---
+                  Expanded(
+                    child: events.isEmpty
+                        ? const Center(child: Text('予定はありません'))
+                        : ListView.builder(
+                            itemCount: events.length,
+                            itemBuilder: (context, index) {
+                              final e = events[index];
+                              final type = ScheduleMapper.toType(e.mode);
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Color(type.colorValue),
+                                  child: Text(
+                                    type.label,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(e.mouseTitle),
+                                subtitle: Text(
+                                  '${dateTimeFormat.format(e.startDate)} 〜 ${dateTimeFormat.format(e.endDate)}',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+/*
       body: Column(
         children: [
           /// --- カレンダー表示 ---
@@ -183,3 +297,4 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 }
+*/

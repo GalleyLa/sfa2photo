@@ -27,7 +27,7 @@ class ScheduleApiService {
   }
 
   //スケジュールの取得
-  Future<Map<String, dynamic>> fetchSchedules(String tenantId) async {
+  Future<Map<String, dynamic>> fetchSchedules() async {
     try {
       // ここで await して userId を確実に取得してから使う
       final userId = await getUserId();
@@ -61,7 +61,7 @@ class ScheduleApiService {
 
       return {
         "success": true,
-        "data": {response.data},
+        "data": response.data,
         // "cookies": cookieStrings,
       };
     } catch (e) {

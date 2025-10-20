@@ -1,24 +1,42 @@
 // lib/infrastructure/schedule_repository_impl.dart
 
+import 'package:flutter/foundation.dart';
+import 'package:sfa2photo/infrastructure/local/datasources/schedule_local_datasource.dart';
+
 import '../../../domain/entity/schedule_entity.dart';
 import '../../../domain/repository/schedule_repository.dart';
 import '../service/schedule_api_service.dart';
+//import '../../infrastructure/local/dao/schedule_dao.dart';
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final ScheduleApiService apiService;
-  final ScheduleLocalDb localDb;
+  final ScheduleLocalDataSource localDb;
 
   ScheduleRepositoryImpl({required this.apiService, required this.localDb});
 
   @override
   Future<List<ScheduleEntity>> fetchRemote() async {
-    final result = await apiService.fetchSchedules('74'); // tenantId は仮
-
+    final result = await apiService.fetchSchedules(); // tenantId は仮
+    //httpレスポンスの成否を確認
     if (result['success'] == true) {
-      final List<dynamic> jsonList = result['data'];
-      return jsonList
-          .map((e) => ScheduleEntity.fromMap(e as Map<String, dynamic>))
-          .toList();
+      // APIが成功したかをチェック
+      if (result['data']['error'] == false) {
+        final List<dynamic> allItems = result['data']['data']['result'];
+
+        // modeを含むデータのみ抽出（スケジュールのみ）
+        final filteredItems = allItems
+            .where((e) => e.containsKey('mode'))
+            .toList();
+
+        // Entityへ変換
+        return filteredItems
+            .map((e) => ScheduleEntity.fromMap(e as Map<String, dynamic>))
+            .toList();
+      } else {
+        // 失敗時はエラーを投げる（メッセージがあれば含める）
+        final message = result['message']?.toString() ?? 'Unknown error';
+        throw Exception('Failed to fetch schedules: $message');
+      }
     } else {
       throw Exception('Failed to fetch schedules: ${result['data']}');
     }
@@ -26,14 +44,12 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
 
   @override
   Future<void> saveLocal(List<ScheduleEntity> schedules) async {
-    // TODO: Implement local save logic or throw UnimplementedError if not supported
-    throw UnimplementedError('saveLocal is not implemented');
+    await localDb.saveSchedules(schedules);
   }
 
   @override
   Future<List<ScheduleEntity>> loadLocal() async {
-    // TODO: Implement local load logic or throw UnimplementedError if not supported
-    throw UnimplementedError('loadLocal is not implemented');
+    return await localDb.getSchedules();
   }
 
   @override

@@ -13,7 +13,9 @@ class ScheduleUseCase {
   Future<List<ScheduleEntity>> execute() async {
     // 例: リモートから取得してローカルに保存もする
     final schedules = await repository.fetchRemote();
-    // await repository.saveLocal(schedules);
+    // ローカルDBに保存
+    await repository.saveLocal(schedules);
+    // 返却
     return schedules;
   }
 }

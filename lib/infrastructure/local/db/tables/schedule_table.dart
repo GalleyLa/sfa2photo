@@ -22,14 +22,14 @@ class ScheduleTable {
     return '''
     CREATE TABLE $tableName (
       $id TEXT PRIMARY KEY,
-      $mode TEXT NOT NULL,
-      $memberId TEXT NOT NULL,
-      $mouseTitle TEXT NOT NULL,
-      $startDate TEXT NOT NULL,
-      $endDate TEXT NOT NULL,
-      $aplResourceDataKey TEXT NOT NULL,
-      $createdAt TEXT NOT NULL,
-      $updatedAt TEXT NOT NULL,
+      $mode TEXT,
+      $memberId TEXT,
+      $mouseTitle TEXT,
+      $startDate TEXT,
+      $endDate TEXT,
+      $aplResourceDataKey TEXT,
+      $createdAt TEXT,
+      $updatedAt TEX,
       $deletedAt TEXT
     )
   ''';
