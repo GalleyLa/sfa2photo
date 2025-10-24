@@ -16,8 +16,6 @@ class ScheduleNotifier extends AsyncNotifier<List<ScheduleEntity>> {
   @override
   Future<List<ScheduleEntity>> build() async {
     return [];
-    //final useCase = await ref.watch(scheduleUseCaseProvider.future);
-    //return useCase.execute();
   }
 
   /// 手動で再取得（＝「同期ボタン」で再読込など）

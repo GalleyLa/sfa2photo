@@ -7,10 +7,11 @@ import '../../infrastructure/service/auth_api_service.dart';
 import '../../infrastructure/service/base_api_service.dart';
 import '../../infrastructure/service/schedule_api_service.dart';
 import '../../infrastructure/usecases/schedule_repository_impl.dart';
-import '../../infrastructure/usecases/schedule_localdb_impl.dart';
-
+//import '../../infrastructure/usecases/schedule_localdb_impl.dart';
+import '../../domain/entity/schedule_entity.dart';
 import '../../domain/repository/schedule_repository.dart';
 import '../../application/usecases/schedule_usecase.dart';
+import '../../application/usecases/load_schedule_usecase.dart';
 import '../../shared/utils/date_formatter_provider.dart';
 
 import 'database_provider.dart';
@@ -59,11 +60,7 @@ final scheduleApiServiceProvider = Provider<ScheduleApiService>((ref) {
 final scheduleLocalDbProvider = FutureProvider<ScheduleLocalDataSource>((
   ref,
 ) async {
-  //final db = ref.watch(databaseProvider).value;
   final db = await ref.watch(databaseProvider.future);
-  //if (db == null) {
-  //  throw Exception('Database is not ready');
-  //}
   return ScheduleLocalDataSource(db);
 });
 
@@ -90,4 +87,18 @@ final scheduleRepositoryProvider = FutureProvider<ScheduleRepository>((
 final scheduleUseCaseProvider = FutureProvider<ScheduleUseCase>((ref) async {
   final repository = await ref.watch(scheduleRepositoryProvider.future);
   return ScheduleUseCase(repository);
+});
+
+// UseCase Provider（同期）
+final loadSchedulesUseCaseProvider = FutureProvider<LoadSchedulesUseCase>((
+  ref,
+) async {
+  final repo = await ref.watch(scheduleRepositoryProvider.future);
+  return LoadSchedulesUseCase(repo);
+});
+
+// スケジュール一覧取得（FutureProvider）
+final schedulesProvider = FutureProvider<List<ScheduleEntity>>((ref) async {
+  final usecase = await ref.watch(loadSchedulesUseCaseProvider.future);
+  return usecase.execute();
 });

@@ -28,12 +28,12 @@ class ScheduleEntity {
 
   factory ScheduleEntity.fromMap(Map<String, dynamic> map) {
     return ScheduleEntity(
-      mode: map['mode'] as String,
+      mode: map['mode']?.toString() ?? '',
       memberId: map['member_id']?.toString(),
       id: map['id']?.toString() ?? '',
-      mouseTitle: map['mouse_title'] as String,
-      startDate: DateTime.parse(map['start']),
-      endDate: DateTime.parse(map['end']),
+      mouseTitle: map['mouse_title']?.toString(),
+      startDate: DateTime.parse(map['start_date'] as String),
+      endDate: DateTime.parse(map['end_date'] as String),
       aplResourceDataKey: map['apl_resource_data_key']?.toString(),
       createdAt: DateTime.tryParse(map['created_at'] ?? ''),
       updatedAt: DateTime.tryParse(map['updated_at'] ?? ''),

@@ -1,9 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import '../../../domain/entity/schedule_entity.dart';
+import '../../local/db/tables/schedule_table.dart';
 
 class ScheduleLocalDataSource {
   final Database db;
-  static const tableName = 'schedules';
+  static const tableName = ScheduleTable.tableName;
 
   ScheduleLocalDataSource(this.db);
 
@@ -19,8 +20,16 @@ class ScheduleLocalDataSource {
     await batch.commit(noResult: true);
   }
 
+  Future<List<ScheduleEntity>> loadSchedules() async {
+    final maps = await db.query(tableName);
+    return maps.map((e) => ScheduleEntity.fromMap(e)).toList();
+  }
+
   Future<List<ScheduleEntity>> getSchedules() async {
-    final rows = await db.query(tableName, orderBy: 'startDate ASC');
+    final rows = await db.query(
+      tableName,
+      orderBy: '${ScheduleTable.startDate} ASC',
+    );
     return rows.map((r) => ScheduleEntity.fromMap(r)).toList();
   }
 
