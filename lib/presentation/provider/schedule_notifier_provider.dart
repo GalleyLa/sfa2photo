@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 //import '../../application/usecases/schedule_usecase.dart';
 import '../../domain/entity/schedule_entity.dart';
 import 'common_providers.dart';
-import '../state/schedule_state.dart';
 
 /// --- AsyncNotifier版 ScheduleNotifier ---
 final scheduleNotifierProvider =

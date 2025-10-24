@@ -8,6 +8,7 @@ import '../../domain/entity/schedule_entity.dart';
 import '../../application/usecases/group_schedules_usecase.dart';
 import '../provider/common_providers.dart';
 import '../../domain/mapper/schedule_mapper.dart';
+import '../../domain/value/schedule_type.dart';
 
 class CalendarPage extends ConsumerStatefulWidget {
   const CalendarPage({super.key});
@@ -86,7 +87,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                           width: 6,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: Colors.green, // タイプに応じた色に変更可能
+                            color: Color(type.colorValue), // タイプに応じた色に変更可能
                             shape: BoxShape.circle,
                           ),
                         );
@@ -106,9 +107,9 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                           final type = ScheduleMapper.toType(e.mode);
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: Colors.grey,
+                              backgroundColor: Color(type.colorValue),
                               child: Text(
-                                "処理タイプ.略称",
+                                type.label,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
