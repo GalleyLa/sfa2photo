@@ -1,5 +1,5 @@
 // lib/domain/entity/schedule_entity.dart
-import '../../infrastructure/local/db/tables/schedule_table.dart';
+//import '../../infrastructure/local/db/tables/schedule_table.dart';
 
 class ScheduleEntity {
   final String mode; // "schedule" or "report"
@@ -25,15 +25,15 @@ class ScheduleEntity {
     this.updatedAt,
     this.deletedAt,
   });
-
+  /*
   factory ScheduleEntity.fromMap(Map<String, dynamic> map) {
     return ScheduleEntity(
       mode: map['mode']?.toString() ?? '',
       memberId: map['member_id']?.toString(),
       id: map['id']?.toString() ?? '',
       mouseTitle: map['mouse_title']?.toString(),
-      startDate: DateTime.parse(map['start_date'] as String),
-      endDate: DateTime.parse(map['end_date'] as String),
+      startDate: DateTime.parse(map['start'] as String),
+      endDate: DateTime.parse(map['end'] as String),
       aplResourceDataKey: map['apl_resource_data_key']?.toString(),
       createdAt: DateTime.tryParse(map['created_at'] ?? ''),
       updatedAt: DateTime.tryParse(map['updated_at'] ?? ''),
@@ -55,4 +55,6 @@ class ScheduleEntity {
       ScheduleTable.deletedAt: deletedAt?.toIso8601String(),
     };
   }
+}
+*/
 }

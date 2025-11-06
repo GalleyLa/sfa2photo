@@ -4,6 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'date_formatter.dart';
 import 'date_formatter_impl.dart';
 
-final dateFormatterProvider = Provider<IDateFormatter>((ref) {
+final dateFormatterProvider = Provider<DateFormatter>((ref) {
   return const DateFormatterImpl();
 });

@@ -6,13 +6,13 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'base_api_service.dart';
 import '../../shared/utils/date_formatter.dart';
-// Add import for IDateFormatter if it's defined elsewhere
+// Add import for DateFormatter if it's defined elsewhere
 // import 'package:your_package/date_formatter.dart';
 
 class ScheduleApiService {
   final BaseApiService baseApiService;
   final FlutterSecureStorage secureStorage;
-  final IDateFormatter formatter;
+  final DateFormatter formatter;
 
   ScheduleApiService(this.baseApiService, this.secureStorage, this.formatter);
 

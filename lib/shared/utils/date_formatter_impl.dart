@@ -3,7 +3,7 @@
 import 'package:intl/intl.dart';
 import 'date_formatter.dart';
 
-class DateFormatterImpl implements IDateFormatter {
+class DateFormatterImpl implements DateFormatter {
   const DateFormatterImpl();
 
   @override

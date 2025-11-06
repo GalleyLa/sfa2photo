@@ -6,7 +6,8 @@ import 'package:sfa2photo/infrastructure/local/datasources/schedule_local_dataso
 import '../../../domain/entity/schedule_entity.dart';
 import '../../../domain/repository/schedule_repository.dart';
 import '../service/schedule_api_service.dart';
-//import '../../infrastructure/local/dao/schedule_dao.dart';
+import '../../domain/models/schedule_api_model.dart';
+//import '../../domain/models/schedule_db_model.dart';
 
 class ScheduleRepositoryImpl implements ScheduleRepository {
   final ScheduleApiService apiService;
@@ -28,9 +29,13 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
             .where((e) => e.containsKey('mode'))
             .toList();
 
-        // Entityへ変換
+        // APIモデル経由でEntityへ変換
         return filteredItems
-            .map((e) => ScheduleEntity.fromMap(e as Map<String, dynamic>))
+            .map(
+              (e) => ScheduleApiModel.fromMap(
+                e as Map<String, dynamic>,
+              ).toEntity(),
+            )
             .toList();
       } else {
         // 失敗時はエラーを投げる（メッセージがあれば含める）

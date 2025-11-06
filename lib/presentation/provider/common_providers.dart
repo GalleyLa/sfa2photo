@@ -1,7 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:sfa2photo/infrastructure/local/datasources/schedule_local_datasource.dart';
+
+import '../../infrastructure/local/datasources/schedule_local_datasource.dart';
+
+import '../../infrastructure/local/datasources/image_local_datasource.dart';
+//import '../../infrastructure/local/db/tables/image_table.dart';
+import '../../infrastructure/usecases/image_repository_impl.dart';
+import '../../domain/repository/image_repository.dart';
+import '../../application/usecases/save_image_usecase.dart';
 
 import '../../infrastructure/service/auth_api_service.dart';
 import '../../infrastructure/service/base_api_service.dart';
@@ -13,6 +20,7 @@ import '../../domain/repository/schedule_repository.dart';
 import '../../application/usecases/schedule_usecase.dart';
 import '../../application/usecases/load_schedule_usecase.dart';
 import '../../shared/utils/date_formatter_provider.dart';
+import '../../application/viewmodel/schedule_view_model.dart';
 
 import 'database_provider.dart';
 
@@ -97,8 +105,50 @@ final loadSchedulesUseCaseProvider = FutureProvider<LoadSchedulesUseCase>((
   return LoadSchedulesUseCase(repo);
 });
 
+// ----------------------------
 // スケジュール一覧取得（FutureProvider）
+// ----------------------------
 final schedulesProvider = FutureProvider<List<ScheduleEntity>>((ref) async {
   final usecase = await ref.watch(loadSchedulesUseCaseProvider.future);
   return usecase.execute();
+});
+
+// =====================================================
+//  Image（画像保存）関連 Provider
+// =====================================================
+
+// --- Local DataSource ---
+final imageLocalDataSourceProvider = FutureProvider<ImageLocalDatasource>((
+  ref,
+) async {
+  final db = await ref.watch(databaseProvider.future);
+  return ImageLocalDatasource(db);
+});
+
+// --- Repository ---
+final imageRepositoryProvider = FutureProvider<ImageRepository>((ref) async {
+  final localDb = await ref.watch(imageLocalDataSourceProvider.future);
+  return ImageRepositoryImpl(localDb: localDb);
+});
+
+// --- UseCase ---
+final saveImageUseCaseProvider = FutureProvider<SaveImageUseCase>((ref) async {
+  final repo = await ref.watch(imageRepositoryProvider.future);
+  return SaveImageUseCase(repo);
+});
+
+// ViewModel Provider
+final scheduleViewModelProvider =
+    AsyncNotifierProvider<ScheduleViewModel, void>(() {
+      return ScheduleViewModel();
+    });
+
+// 初期化（UseCase注入）を行うための拡張
+final initializedScheduleViewModelProvider = FutureProvider<ScheduleViewModel>((
+  ref,
+) async {
+  final useCase = await ref.watch(saveImageUseCaseProvider.future);
+  final viewModel = ref.watch(scheduleViewModelProvider.notifier);
+  viewModel.init(useCase);
+  return viewModel;
 });

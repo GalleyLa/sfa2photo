@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:sfa2photo/presentation/widgets/loading_indicator.dart';
+
 import '../provider/auth_provider.dart';
-//import '../provider/schedule_providers.dart';
+
 import '../provider/schedule_notifier_provider.dart';
 import 'login_screen.dart';
 import 'schedule_calendar_screen.dart';
@@ -60,7 +60,6 @@ class HomeScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 ref.read(scheduleNotifierProvider.notifier).fetch();
-                // final schedulesState = ref.read(scheduleNotifierProvider);
               },
 
               child: const Text("スケジュール一覧"),
@@ -68,12 +67,10 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                //MaterialPageRoute(builder: (_) => const HomeScreen());
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => const CalendarPage()),
                 );
-                // final schedulesState = ref.read(scheduleNotifierProvider);
               },
 
               child: const Text("カレンダー"),

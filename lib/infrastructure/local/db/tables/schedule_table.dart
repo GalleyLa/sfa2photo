@@ -29,9 +29,9 @@ class ScheduleTable {
       $endDate TEXT,
       $aplResourceDataKey TEXT,
       $createdAt TEXT,
-      $updatedAt TEX,
+      $updatedAt TEXT,
       $deletedAt TEXT
-    )
+    );
   ''';
   }
 

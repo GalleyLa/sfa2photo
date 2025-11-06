@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../infrastructure/local/db/tables/schedule_table.dart';
+import '../../infrastructure/local/db/tables/image_table.dart';
 import 'package:path/path.dart' as p;
 
 final databaseProvider = FutureProvider<Database>((ref) async {
@@ -12,7 +13,8 @@ final databaseProvider = FutureProvider<Database>((ref) async {
     path,
     version: 1,
     onCreate: (db, version) async {
-      await ScheduleTable.createTable(db); // ここを置き換え
+      await ScheduleTable.createTable(db); // スケジュールテーブルの作成
+      await ImageTable.createTable(db); // 画像テーブルの作成
     },
   );
 });

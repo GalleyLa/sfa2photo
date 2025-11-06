@@ -9,6 +9,7 @@ import '../../application/usecases/group_schedules_usecase.dart';
 import '../provider/common_providers.dart';
 import '../../domain/mapper/schedule_mapper.dart';
 import '../../domain/value/schedule_type.dart';
+import '../../application/viewmodel/schedule_view_model.dart';
 
 class CalendarPage extends ConsumerStatefulWidget {
   const CalendarPage({super.key});
@@ -39,6 +40,15 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
   Widget build(BuildContext context) {
     final schedulesAsync = ref.watch(schedulesProvider);
     final dateFormat = DateFormat('MM/dd HH:mm');
+    final viewModelAsync = ref.watch(initializedScheduleViewModelProvider);
+
+    //final scheduleViewModelProvider =
+    //    FutureProvider.autoDispose<ScheduleViewModel>((ref) async {
+    //      final saveImageUseCase = await ref.watch(
+    //        saveImageUseCaseProvider.future,
+    //      );
+    //      return ScheduleViewModel(saveImageUseCase: saveImageUseCase);
+    //    });
 
     return Scaffold(
       appBar: AppBar(
@@ -121,6 +131,21 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                               '${dateFormat.format(e.startDate)} 〜 ${dateFormat.format(e.endDate)}',
                               style: const TextStyle(fontSize: 12),
                             ),
+                            onTap: () async {
+                              // TODO: implement save image functionality (use a provider or viewModel)
+                              //ScaffoldMessenger.of(context).showSnackBar(
+                              //  const SnackBar(content: Text('画像を保存しました')),
+                              //);
+                              final vm = await viewModelAsync.valueOrNull;
+                              if (vm != null) {
+                                await vm.captureAndSaveImage(
+                                  e.id,
+                                ); // ← カメラ起動→保存
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('画像を保存しました')),
+                                );
+                              }
+                            },
                           );
                         },
                       ),
