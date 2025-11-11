@@ -154,37 +154,3 @@ final scheduleViewModelProvider =
     AsyncNotifierProvider<ScheduleViewModel, void>(() {
       return ScheduleViewModel();
     });
-
-// 初期化（UseCase注入）を行うための拡張
-/*
-final initializedScheduleViewModelProvider = FutureProvider<ScheduleViewModel>((
-  ref,
-) async {
-  final saveUseCase = await ref.watch(saveImageUseCaseProvider.future);
-  final fetchUseCase = await ref.watch(fetchImagesUseCaseProvider.future);
-
-  final viewModel = ref.watch(scheduleViewModelProvider.notifier);
-
-  viewModel.init(saveUseCase, fetchUseCase);
-
-  return viewModel;
-});
-*/
-// Provide a no-op init extension so callers can initialize the view model with a use case.
-// Implementers can replace or extend this with real initialization logic inside ScheduleViewModel.
-//extension ScheduleViewModelInitExt on ScheduleViewModel {
-//  void init(SaveImageUseCase useCase) {
-//    // No-op default implementation to satisfy static typing; override in ScheduleViewModel if needed.
-//  }
-//}
-
-/*
-final initializedScheduleViewModelProvider = FutureProvider<ScheduleViewModel>((
-  ref,
-) async {
-  final useCase = await ref.watch(saveImageUseCaseProvider.future);
-  final viewModel = ref.watch(scheduleViewModelProvider.notifier);
-  viewModel.init(useCase);
-  return viewModel;
-});
-*/

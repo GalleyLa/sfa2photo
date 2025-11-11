@@ -33,7 +33,7 @@ class ScheduleViewModel extends AsyncNotifier<void> {
   /// DB から画像を取得して photoMap を更新
   Future<void> _reloadPhotos() async {
     final photos = await _fetchImagesUseCase.execute();
-    print('Fetched photos count: ${photos.length}');
+    print('取得した写真枚数: ${photos.length}');
 
     photoMap = _groupImagesByDayUseCase.execute(photos);
   }

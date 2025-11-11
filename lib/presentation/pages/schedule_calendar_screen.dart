@@ -44,16 +44,6 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     final viewModel = ref.watch(scheduleViewModelProvider.notifier);
     //final viewModelAsync = ref.watch(initializedScheduleViewModelProvider);
     final dateFormat = DateFormat('MM/dd HH:mm');
-    //final vmState = ref.watch(scheduleViewModelProvider);
-    //final viewModelAsync = ref.watch(scheduleViewModelProvider);
-
-    //final scheduleViewModelProvider =
-    //    FutureProvider.autoDispose<ScheduleViewModel>((ref) async {
-    //      final saveImageUseCase = await ref.watch(
-    //        saveImageUseCaseProvider.future,
-    //      );
-    //      return ScheduleViewModel(saveImageUseCase: saveImageUseCase);
-    //    });
 
     return Scaffold(
       appBar: AppBar(
@@ -99,23 +89,103 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                 eventLoader: _getEventsForDay,
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
-                    // スケジュールマーカーのカスタマイズ
-                    if (events.isEmpty) return null;
-                    return Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 2,
-                      runSpacing: 2,
-                      children: events.take(3).map((e) {
-                        final type = ScheduleMapper.toType(e.mode);
-                        return Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: Color(type.colorValue), // タイプに応じた色に変更可能
-                            shape: BoxShape.circle,
-                          ),
-                        );
-                      }).toList(),
+                    final viewModel = ref.watch(
+                      scheduleViewModelProvider.notifier,
+                    );
+
+                    final dateKey = DateTime(date.year, date.month, date.day);
+                    final photoEntities = viewModel.photoMap[dateKey];
+
+                    final hasPhotos =
+                        photoEntities != null && photoEntities.isNotEmpty;
+                    final hasSchedules = events.isNotEmpty;
+
+                    if (!hasSchedules && !hasPhotos) {
+                      return null;
+                    }
+
+                    //  その日のスケジュール色を取得（複数ある場合は最初の色）
+                    Color scheduleColor = Colors.red; // default fallback
+                    if (hasSchedules) {
+                      final type = ScheduleMapper.toType(events.first.mode);
+                      scheduleColor = Color(type.colorValue);
+                    }
+                    return SizedBox(
+                      height: 32,
+                      child: Stack(
+                        children: [
+                          // スケジュールマーカー（小さい丸）
+                          if (hasSchedules)
+                            Align(
+                              alignment: Alignment.center,
+                              child: Wrap(
+                                spacing: 2,
+                                runSpacing: 2,
+                                children: events.take(3).map((e) {
+                                  final type = ScheduleMapper.toType(e.mode);
+                                  return Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      color: Color(type.colorValue),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+
+                          // 写真バッジ（右下に固定）
+                          if (hasPhotos)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(1),
+                                decoration: BoxDecoration(
+                                  color: scheduleColor, //  スケジュール色と連動
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: Text(
+                                  '${photoEntities!.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          /*                           if (hasPhotos)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: scheduleColor, // ✅ スケジュール色と連動
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),*/
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -149,17 +219,11 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                               final saved = await viewModel.captureAndSaveImage(
                                 e.id,
                               );
-                              /*
-                              final vm = await viewModelAsync.valueOrNull;
-                              if (vm != null) {
-                                await vm.captureAndSaveImage(
-                                  e.id,
-                                ); // ← カメラ起動→保存
-                                */
                               if (saved) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('画像を保存しました')),
                                 );
+                                setState(() {}); // カレンダー再描画
                               } else {
                                 // キャンセル時は何もしない、もしくは任意で通知
                                 print('撮影がキャンセルされました');
