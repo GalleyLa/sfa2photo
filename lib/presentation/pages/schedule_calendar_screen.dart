@@ -9,7 +9,7 @@ import '../../application/usecases/group_schedules_usecase.dart';
 import '../provider/common_providers.dart';
 import '../../domain/mapper/schedule_mapper.dart';
 import '../../domain/value/schedule_type.dart';
-import '../../application/viewmodel/schedule_view_model.dart';
+//import '../../application/viewmodel/schedule_view_model.dart';
 
 class CalendarPage extends ConsumerStatefulWidget {
   const CalendarPage({super.key});
@@ -21,6 +21,7 @@ class CalendarPage extends ConsumerStatefulWidget {
 class _CalendarPageState extends ConsumerState<CalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
   Map<DateTime, List<ScheduleEntity>> scheduleMap = {};
 
   @override
@@ -38,9 +39,13 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(scheduleViewModelProvider);
     final schedulesAsync = ref.watch(schedulesProvider);
+    final viewModel = ref.watch(scheduleViewModelProvider.notifier);
+    //final viewModelAsync = ref.watch(initializedScheduleViewModelProvider);
     final dateFormat = DateFormat('MM/dd HH:mm');
-    final viewModelAsync = ref.watch(initializedScheduleViewModelProvider);
+    //final vmState = ref.watch(scheduleViewModelProvider);
+    //final viewModelAsync = ref.watch(scheduleViewModelProvider);
 
     //final scheduleViewModelProvider =
     //    FutureProvider.autoDispose<ScheduleViewModel>((ref) async {
@@ -77,6 +82,14 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                 lastDay: DateTime.utc(2030, 12, 31),
                 focusedDay: _focusedDay,
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+
+                calendarFormat: _calendarFormat,
+                onFormatChanged: (format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                },
+
                 onDaySelected: (selectedDay, focusedDay) {
                   setState(() {
                     _selectedDay = selectedDay;
@@ -86,6 +99,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                 eventLoader: _getEventsForDay,
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
+                    // スケジュールマーカーのカスタマイズ
                     if (events.isEmpty) return null;
                     return Wrap(
                       alignment: WrapAlignment.center,
@@ -132,18 +146,23 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                               style: const TextStyle(fontSize: 12),
                             ),
                             onTap: () async {
-                              // TODO: implement save image functionality (use a provider or viewModel)
-                              //ScaffoldMessenger.of(context).showSnackBar(
-                              //  const SnackBar(content: Text('画像を保存しました')),
-                              //);
+                              final saved = await viewModel.captureAndSaveImage(
+                                e.id,
+                              );
+                              /*
                               final vm = await viewModelAsync.valueOrNull;
                               if (vm != null) {
                                 await vm.captureAndSaveImage(
                                   e.id,
                                 ); // ← カメラ起動→保存
+                                */
+                              if (saved) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('画像を保存しました')),
                                 );
+                              } else {
+                                // キャンセル時は何もしない、もしくは任意で通知
+                                print('撮影がキャンセルされました');
                               }
                             },
                           );

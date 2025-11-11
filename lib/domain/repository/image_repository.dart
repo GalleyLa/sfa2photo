@@ -7,5 +7,6 @@ abstract class ImageRepository {
   //Future<List<ImageEntity>> loadLocal();
   Future<void> saveImage(ImageEntity image);
   Future<List<ImageEntity>> getImagesByScheduleId(String scheduleId);
-  Future<List<ImageEntity>> getAllImages();
+  //Future<List<ImageEntity>> fetchImages();
+  Future<List<ImageEntity>> loadAllImages();
 }

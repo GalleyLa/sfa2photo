@@ -19,9 +19,7 @@ class ImageRepositoryImpl implements ImageRepository {
   }
 
   @override
-  Future<List<ImageEntity>> getAllImages() async {
-    // TODO: Implement getAllImages logic or throw UnimplementedError if not supported
-    throw UnimplementedError('getAllCustomers is not implemented');
-    //    return await localDb.getAllImages();
+  Future<List<ImageEntity>> loadAllImages() async {
+    return await localDb.loadImages();
   }
 }

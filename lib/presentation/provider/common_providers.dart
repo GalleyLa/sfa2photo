@@ -8,7 +8,6 @@ import '../../infrastructure/local/datasources/image_local_datasource.dart';
 //import '../../infrastructure/local/db/tables/image_table.dart';
 import '../../infrastructure/usecases/image_repository_impl.dart';
 import '../../domain/repository/image_repository.dart';
-import '../../application/usecases/save_image_usecase.dart';
 
 import '../../infrastructure/service/auth_api_service.dart';
 import '../../infrastructure/service/base_api_service.dart';
@@ -17,8 +16,14 @@ import '../../infrastructure/usecases/schedule_repository_impl.dart';
 //import '../../infrastructure/usecases/schedule_localdb_impl.dart';
 import '../../domain/entity/schedule_entity.dart';
 import '../../domain/repository/schedule_repository.dart';
+
 import '../../application/usecases/schedule_usecase.dart';
 import '../../application/usecases/load_schedule_usecase.dart';
+import '../../application/usecases/schedule_usecase.dart';
+
+import '../../application/usecases/save_image_usecase.dart';
+import '../../application/usecases/fetch_image_usecase.dart';
+
 import '../../shared/utils/date_formatter_provider.dart';
 import '../../application/viewmodel/schedule_view_model.dart';
 
@@ -137,6 +142,13 @@ final saveImageUseCaseProvider = FutureProvider<SaveImageUseCase>((ref) async {
   return SaveImageUseCase(repo);
 });
 
+final fetchImagesUseCaseProvider = FutureProvider<FetchImagesUseCase>((
+  ref,
+) async {
+  final repo = await ref.watch(imageRepositoryProvider.future);
+  return FetchImagesUseCase(repo);
+});
+
 // ViewModel Provider
 final scheduleViewModelProvider =
     AsyncNotifierProvider<ScheduleViewModel, void>(() {
@@ -144,6 +156,29 @@ final scheduleViewModelProvider =
     });
 
 // 初期化（UseCase注入）を行うための拡張
+/*
+final initializedScheduleViewModelProvider = FutureProvider<ScheduleViewModel>((
+  ref,
+) async {
+  final saveUseCase = await ref.watch(saveImageUseCaseProvider.future);
+  final fetchUseCase = await ref.watch(fetchImagesUseCaseProvider.future);
+
+  final viewModel = ref.watch(scheduleViewModelProvider.notifier);
+
+  viewModel.init(saveUseCase, fetchUseCase);
+
+  return viewModel;
+});
+*/
+// Provide a no-op init extension so callers can initialize the view model with a use case.
+// Implementers can replace or extend this with real initialization logic inside ScheduleViewModel.
+//extension ScheduleViewModelInitExt on ScheduleViewModel {
+//  void init(SaveImageUseCase useCase) {
+//    // No-op default implementation to satisfy static typing; override in ScheduleViewModel if needed.
+//  }
+//}
+
+/*
 final initializedScheduleViewModelProvider = FutureProvider<ScheduleViewModel>((
   ref,
 ) async {
@@ -152,3 +187,4 @@ final initializedScheduleViewModelProvider = FutureProvider<ScheduleViewModel>((
   viewModel.init(useCase);
   return viewModel;
 });
+*/

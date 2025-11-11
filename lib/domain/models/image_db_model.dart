@@ -1,4 +1,5 @@
 import '../../domain/entity/image_entity.dart';
+import '../../infrastructure/local/db/tables/image_table.dart';
 
 class ImageDbModel {
   final int id;
@@ -15,18 +16,18 @@ class ImageDbModel {
 
   factory ImageDbModel.fromMap(Map<String, dynamic> map) {
     return ImageDbModel(
-      id: map['id'] ?? 0,
-      scheduleId: map['schedule_id']?.toString() ?? '',
-      imagePath: map['image_path']?.toString() ?? '',
-      createdAt: DateTime.tryParse(map['created_at'] ?? ''),
+      id: map[ImageTable.id] ?? 0,
+      scheduleId: map[ImageTable.scheduleId]?.toString() ?? '',
+      imagePath: map[ImageTable.imagePath]?.toString() ?? '',
+      createdAt: DateTime.tryParse(map[ImageTable.createdAt] ?? ''),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'schedule_id': scheduleId,
-      'image_path': imagePath,
-      'created_at': createdAt?.toIso8601String(),
+      ImageTable.scheduleId: scheduleId,
+      ImageTable.imagePath: imagePath,
+      ImageTable.createdAt: createdAt?.toIso8601String(),
     };
   }
 

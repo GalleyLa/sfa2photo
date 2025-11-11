@@ -60,6 +60,18 @@ class ImageLocalDatasource {
     return rows.map((r) => ImageDbModel.fromMap(r).toEntity()).toList();
   }
 
+  /*
+  /// 開始日時で並べた一覧を取得
+  Future<List<ImageEntity>> getAllImages() async {
+    final rows = await db.query(
+      tableName,
+      orderBy: '${ImageTable.createdAt} ASC',
+    );
+    return rows
+        .map((r) => ImageDbModel.fromMap(r).toEntity()) //  同様
+        .toList();
+  }
+*/
   /// 全削除
   Future<void> clearImages() async {
     await db.delete(tableName);
