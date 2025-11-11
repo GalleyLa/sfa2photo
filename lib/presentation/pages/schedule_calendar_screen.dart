@@ -134,7 +134,43 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                                 }).toList(),
                               ),
                             ),
+                          // ✅ 写真（📸 + 枚数）マーカー
+                          if (hasPhotos)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: scheduleColor, // スケジュール色と統一
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
+                                      size: 10,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      '${photoEntities.length}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
 
+                          /*
                           // 写真バッジ（右下に固定）
                           if (hasPhotos)
                             Positioned(
@@ -161,6 +197,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                                 ),
                               ),
                             ),
+                            */
                           /*                           if (hasPhotos)
                             Positioned(
                               bottom: 0,
@@ -168,7 +205,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                               child: Container(
                                 padding: const EdgeInsets.all(2),
                                 decoration: BoxDecoration(
-                                  color: scheduleColor, // ✅ スケジュール色と連動
+                                  color: scheduleColor, // スケジュール色と連動
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -178,12 +215,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                                 ),
                               ),
                             ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),*/
+                        */
                         ],
                       ),
                     );
