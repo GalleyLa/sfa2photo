@@ -1,6 +1,7 @@
 // lib/infrastructure/models/user_model.dart
 
 import '../../domain/entity/schedule_entity.dart';
+import '../../shared/utils/date_parser.dart';
 
 class ScheduleApiModel {
   final String mode;
@@ -35,13 +36,19 @@ class ScheduleApiModel {
   }
 
   ScheduleEntity toEntity() {
+    final startDate = parseFlexibleDate(start);
+    if (startDate == null) throw FormatException("Invalid start date: $start");
+
+    final endDate = parseFlexibleDate(end);
+    if (endDate == null) throw FormatException("Invalid end date: $end");
+
     return ScheduleEntity(
       mode: mode,
       memberId: member_id,
       id: id,
       mouseTitle: mouse_title,
-      startDate: DateTime.parse(start),
-      endDate: DateTime.parse(end),
+      startDate: startDate,
+      endDate: endDate,
       aplResourceDataKey: apl_resource_data_key,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),

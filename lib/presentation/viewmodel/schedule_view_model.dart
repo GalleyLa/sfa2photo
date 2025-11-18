@@ -5,16 +5,18 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../domain/entity/image_entity.dart';
-import '../usecases/save_image_usecase.dart';
-import '../usecases/fetch_image_usecase.dart';
-import '../usecases/group_Images_by_date_usecase.dart';
-import '../../presentation/provider/common_providers.dart';
+import '../../application/usecases/save_image_usecase.dart';
+import '../../application/usecases/fetch_image_usecase.dart';
+import '../../application/usecases/group_Images_by_date_usecase.dart';
+import '../../application/usecases/delete_image_usecase.dart';
+import '../provider/common_providers.dart';
 
 class ScheduleViewModel extends AsyncNotifier<void> {
   late final SaveImageUseCase _saveImageUseCase;
   late final FetchImagesUseCase _fetchImagesUseCase;
   final GroupImagesByDayUseCase _groupImagesByDayUseCase =
       GroupImagesByDayUseCase();
+  late final DeleteImageUseCase _deleteImageUseCase;
 
   /// 撮影日ごとの写真Map
   Map<DateTime, List<ImageEntity>> photoMap = {};
@@ -25,6 +27,7 @@ class ScheduleViewModel extends AsyncNotifier<void> {
     // UseCase を注入（FutureProvider 経由）
     _saveImageUseCase = await ref.watch(saveImageUseCaseProvider.future);
     _fetchImagesUseCase = await ref.watch(fetchImagesUseCaseProvider.future);
+    _deleteImageUseCase = await ref.watch(deleteImageUseCaseProvider.future);
 
     // DB から写真を読み込み photoMap を作成
     await _reloadPhotos();
@@ -38,9 +41,27 @@ class ScheduleViewModel extends AsyncNotifier<void> {
     photoMap = _groupImagesByDayUseCase.execute(photos);
   }
 
+  Future<void> deleteImage(ImageEntity image) async {
+    // 1. DB・ファイルから削除
+    await _deleteImageUseCase.execute(image);
+
+    // 2. スケジュールに紐づく画像を再取得
+    //final images = await loadImagesUseCase.executeAll();
+    await _reloadPhotos();
+    // 3. 再集計（GroupImagesByDayUseCase）
+    //final newPhotoMap = GroupImagesByDayUseCase().execute(images);
+
+    // 4. state 更新 → UI 自動リビルド
+    //state = state.copyWith(photoMap: newPhotoMap);
+    state = const AsyncData(null);
+  }
+
   /// スケジュールタップ → カメラ起動 → 画像保存処理
   /// true: 保存成功, false: キャンセル
-  Future<bool> captureAndSaveImage(String scheduleId) async {
+  Future<bool> captureAndSaveImage(
+    String scheduleId,
+    DateTime scheduleSelDate,
+  ) async {
     try {
       state = const AsyncLoading();
 
@@ -65,6 +86,7 @@ class ScheduleViewModel extends AsyncNotifier<void> {
         id: 0,
         scheduleId: scheduleId,
         imagePath: savedPath,
+        scheduleSelDate: scheduleSelDate,
         createdAt: DateTime.now(),
       );
 

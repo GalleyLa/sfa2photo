@@ -16,6 +16,9 @@ import '../../infrastructure/usecases/schedule_repository_impl.dart';
 //import '../../infrastructure/usecases/schedule_localdb_impl.dart';
 import '../../domain/entity/schedule_entity.dart';
 import '../../domain/repository/schedule_repository.dart';
+import '../../domain/repository/image_repository.dart';
+
+import '../../application/usecases/delete_image_usecase.dart';
 
 import '../../application/usecases/schedule_usecase.dart';
 import '../../application/usecases/load_schedule_usecase.dart';
@@ -23,9 +26,10 @@ import '../../application/usecases/schedule_usecase.dart';
 
 import '../../application/usecases/save_image_usecase.dart';
 import '../../application/usecases/fetch_image_usecase.dart';
+import '../../application/usecases/delete_image_usecase.dart';
 
 import '../../shared/utils/date_formatter_provider.dart';
-import '../../application/viewmodel/schedule_view_model.dart';
+import '../viewmodel/schedule_view_model.dart';
 
 import 'database_provider.dart';
 
@@ -147,6 +151,14 @@ final fetchImagesUseCaseProvider = FutureProvider<FetchImagesUseCase>((
 ) async {
   final repo = await ref.watch(imageRepositoryProvider.future);
   return FetchImagesUseCase(repo);
+});
+
+// DeleteImageUseCase Provider
+final deleteImageUseCaseProvider = FutureProvider<DeleteImageUseCase>((
+  ref,
+) async {
+  final repo = await ref.watch(imageRepositoryProvider.future);
+  return DeleteImageUseCase(repo);
 });
 
 // ViewModel Provider

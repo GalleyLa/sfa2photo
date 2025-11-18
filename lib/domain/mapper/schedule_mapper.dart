@@ -10,6 +10,8 @@ class ScheduleMapper {
         return ScheduleType.member;
       case 'report':
         return ScheduleType.report;
+      case 'circular':
+        return ScheduleType.circular;
       default:
         return ScheduleType.unknown; // 未知の値はグレー表示
     }

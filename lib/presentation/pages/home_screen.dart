@@ -62,7 +62,7 @@ class HomeScreen extends ConsumerWidget {
                 ref.read(scheduleNotifierProvider.notifier).fetch();
               },
 
-              child: const Text("スケジュール一覧"),
+              child: const Text("スケジュール一覧取得"),
             ),
             const SizedBox(height: 16),
             ElevatedButton(

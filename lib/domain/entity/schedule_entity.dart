@@ -25,36 +25,4 @@ class ScheduleEntity {
     this.updatedAt,
     this.deletedAt,
   });
-  /*
-  factory ScheduleEntity.fromMap(Map<String, dynamic> map) {
-    return ScheduleEntity(
-      mode: map['mode']?.toString() ?? '',
-      memberId: map['member_id']?.toString(),
-      id: map['id']?.toString() ?? '',
-      mouseTitle: map['mouse_title']?.toString(),
-      startDate: DateTime.parse(map['start'] as String),
-      endDate: DateTime.parse(map['end'] as String),
-      aplResourceDataKey: map['apl_resource_data_key']?.toString(),
-      createdAt: DateTime.tryParse(map['created_at'] ?? ''),
-      updatedAt: DateTime.tryParse(map['updated_at'] ?? ''),
-      deletedAt: DateTime.tryParse(map['deleted_at'] ?? ''),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      ScheduleTable.id: id,
-      ScheduleTable.mode: mode,
-      ScheduleTable.memberId: memberId ?? '',
-      ScheduleTable.mouseTitle: mouseTitle ?? '',
-      ScheduleTable.startDate: startDate.toIso8601String(),
-      ScheduleTable.endDate: endDate.toIso8601String(),
-      ScheduleTable.aplResourceDataKey: aplResourceDataKey ?? '',
-      ScheduleTable.createdAt: createdAt?.toIso8601String() ?? '',
-      ScheduleTable.updatedAt: updatedAt?.toIso8601String() ?? '',
-      ScheduleTable.deletedAt: deletedAt?.toIso8601String(),
-    };
-  }
-}
-*/
 }

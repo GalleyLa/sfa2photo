@@ -10,9 +10,12 @@ class GroupImagesByDayUseCase {
     for (final img in images) {
       // 時間情報を切り捨てて日付だけにまとめる
       final date = DateTime(
-        img.createdAt!.year,
-        img.createdAt!.month,
-        img.createdAt!.day,
+        //img.createdAt!.year,
+        //img.createdAt!.month,
+        //img.createdAt!.day,
+        img.scheduleSelDate.year,
+        img.scheduleSelDate.month,
+        img.scheduleSelDate.day,
       );
 
       map.putIfAbsent(date, () => []).add(img);

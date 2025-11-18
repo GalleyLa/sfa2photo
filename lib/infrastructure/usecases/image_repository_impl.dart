@@ -22,4 +22,9 @@ class ImageRepositoryImpl implements ImageRepository {
   Future<List<ImageEntity>> loadAllImages() async {
     return await localDb.loadImages();
   }
+
+  //@override
+  //Future<void> deleteImage(ImageEntity image) async {
+  //  await localDb.deleteImage(image);
+  //}
 }
