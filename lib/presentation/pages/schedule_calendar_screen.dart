@@ -439,7 +439,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                           );
                           final photos = viewModel.photoMap.values
                               .expand((list) => list)
-                              .where((img) => img.scheduleId == e.id)
+                              .where((img) => img.scheduleId == e.scheduleId)
                               .toList();
 
                           return ListTile(
@@ -447,7 +447,11 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                             leading: GestureDetector(
                               onTap: () async {
                                 final saved = await viewModel
-                                    .captureAndSaveImage(e.id, _selectedDay!);
+                                    .captureAndSaveImage(
+                                      context,
+                                      e.scheduleId,
+                                      _selectedDay!,
+                                    );
                                 if (saved) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(content: Text('画像を保存しました')),
@@ -470,7 +474,9 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                             ),
                             title: Text(e.mouseTitle),
                             subtitle: Text(
-                              '${dateFormat.format(e.startDate)} 〜 ${dateFormat.format(e.endDate)}',
+                              e.allDay == 1
+                                  ? '終日'
+                                  : '${dateFormat.format(e.startDate)} 〜 ${dateFormat.format(e.endDate)}',
                               style: const TextStyle(fontSize: 12),
                             ),
 
@@ -507,7 +513,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                                       _showPhotoModal(
                                         context,
                                         photos,
-                                        e.id,
+                                        e.scheduleId,
                                         scheduleColor,
                                       );
                                     },

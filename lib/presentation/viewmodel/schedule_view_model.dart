@@ -10,6 +10,10 @@ import '../../application/usecases/fetch_image_usecase.dart';
 import '../../application/usecases/group_Images_by_date_usecase.dart';
 import '../../application/usecases/delete_image_usecase.dart';
 import '../provider/common_providers.dart';
+import '../pages/camera_page.dart';
+import 'package:flutter/material.dart';
+
+//final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class ScheduleViewModel extends AsyncNotifier<void> {
   late final SaveImageUseCase _saveImageUseCase;
@@ -59,26 +63,37 @@ class ScheduleViewModel extends AsyncNotifier<void> {
   /// スケジュールタップ → カメラ起動 → 画像保存処理
   /// true: 保存成功, false: キャンセル
   Future<bool> captureAndSaveImage(
+    BuildContext context,
     String scheduleId,
     DateTime scheduleSelDate,
   ) async {
     try {
       state = const AsyncLoading();
 
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(source: ImageSource.camera);
-      if (pickedFile == null) {
+      //final picker = ImagePicker();
+      //final pickedFile = await picker.pickImage(source: ImageSource.camera);
+      //if (pickedFile == null) {
+      //  state = const AsyncData(null);
+      //  return false; // ユーザーがキャンセル
+      //}
+      // --- Flutter の全画面カメラを起動 ---
+      final cameraPath = await Navigator.of(
+        context,
+      ).push<String>(MaterialPageRoute(builder: (_) => const CameraPage()));
+
+      if (cameraPath == null) {
         state = const AsyncData(null);
         return false; // ユーザーがキャンセル
       }
 
       // 保存先（アプリ専用フォルダ）
       final directory = await getApplicationDocumentsDirectory();
-      final filename = p.basename(pickedFile.path);
+      //final filename = p.basename(pickedFile.path);
+      final filename = p.basename(cameraPath);
       final savedPath = p.join(directory.path, filename);
 
       // 画像を保存（コピー）
-      final imageFile = File(pickedFile.path);
+      final imageFile = File(cameraPath);
       await imageFile.copy(savedPath);
 
       // Entity作成

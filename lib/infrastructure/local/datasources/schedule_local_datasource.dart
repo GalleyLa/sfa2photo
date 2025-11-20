@@ -14,6 +14,8 @@ class ScheduleLocalDataSource {
   Future<void> saveSchedules(List<ScheduleEntity> schedules) async {
     final batch = db.batch();
     for (final s in schedules) {
+      //print("DB insert allDay = ${s.allDay}");
+
       final dbModel = ScheduleDbModel.fromEntity(s); // Entity→DBModel変換
       batch.insert(
         tableName,

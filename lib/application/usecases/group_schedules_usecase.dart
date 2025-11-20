@@ -9,6 +9,7 @@ class GroupSchedulesByDayUseCase {
     final map = <DateTime, List<ScheduleEntity>>{};
 
     for (final schedule in schedules) {
+      /*
       DateTime day = schedule.startDate;
       while (!day.isAfter(schedule.endDate)) {
         final normalized = DateTime(day.year, day.month, day.day);
@@ -16,6 +17,12 @@ class GroupSchedulesByDayUseCase {
         map[normalized]!.add(schedule);
         day = day.add(const Duration(days: 1));
       }
+      */
+      DateTime day = schedule.scheduleDate;
+      final normalized = DateTime(day.year, day.month, day.day);
+      map.putIfAbsent(normalized, () => []);
+      map[normalized]!.add(schedule);
+      day = day.add(const Duration(days: 1));
     }
 
     return map;
